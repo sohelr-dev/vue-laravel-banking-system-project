@@ -4,5 +4,13 @@ import "@fortawesome/fontawesome-free/css/all.min.css"
 
 import { createApp } from 'vue'
 import App from './App.vue'
+import myRoutes from './components/routes'
+import { createPinia } from 'pinia'
 
-createApp(App).mount('#app')
+const pinia =createPinia();
+
+
+createApp(App)
+.use(myRoutes)
+.use(pinia)
+.mount('#app')

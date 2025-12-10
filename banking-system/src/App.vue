@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import DefaultLayout from "./components/layouts/DefaultLayout.vue";
-
+import DefaultLayout from './components/view/layouts/DefaultLayout.vue';
 </script>
-
 <template>
-<DefaultLayout/>
+    <DefaultLayout/>
 </template>
 <style scoped>
 
