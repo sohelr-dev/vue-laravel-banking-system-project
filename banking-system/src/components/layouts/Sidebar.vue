@@ -1,161 +1,114 @@
-<template>
-  <!-- Overlay for mobile -->
-  <div v-if="isMobile && isOpen" class="overlay" @click="closeSidebar"></div>
-
-  <aside :class="['sidebar', { open: isOpen, collapsed: isCollapsed }]">
-    <div class="sidebar-header">
-      <h2 v-if="!isCollapsed">Banking</h2>
-      <button v-if="isMobile" class="close-btn" @click="closeSidebar">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <ul class="menu">
-      <li
-        v-for="item in menu"
-        :key="item.name"
-        :class="{ active: active === item.name }"
-        @click="setActive(item.name)"
-      >
-        <i :class="item.icon"></i>
-        <span v-if="!isCollapsed">{{ item.name }}</span>
-      </li>
-    </ul>
-  </aside>
-</template>
-
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { useAuthStore } from "@/store/auth";
+import { computed } from "vue";
 
-const isOpen = ref(true);         // Sidebar visible initially on desktop
-const isCollapsed = ref(false);   // Not collapsed initially
-const isMobile = ref(false);
-const active = ref('Dashboard');
+const auth = useAuthStore();
 
-const menu = [
-  { name: 'Dashboard', icon: 'fas fa-home' },
-  { name: 'Customers', icon: 'fas fa-users' },
-  { name: 'Transactions', icon: 'fas fa-money-bill' },
-  { name: 'Reports', icon: 'fas fa-chart-line' },
-];
-
-const checkScreen = () => {
-  isMobile.value = window.innerWidth <= 768;
-
-  if (isMobile.value) {
-    isCollapsed.value = false; // full width on mobile
-    isOpen.value = false;      // hidden by default
-  } else {
-    isCollapsed.value = false; // full sidebar desktop
-    isOpen.value = true;
-  }
-};
-
-const toggleSidebar = () => {
-  if (!isMobile.value) {
-    // Desktop: collapse/expand
-    isCollapsed.value = !isCollapsed.value;
-  } else {
-    // Mobile: toggle open/close
-    isOpen.value = !isOpen.value;
-  }
-};
-
-const closeSidebar = () => {
-  isOpen.value = false;
-};
-
-const setActive = (name: string) => {
-  active.value = name;
-};
-
-onMounted(() => {
-  checkScreen();
-  window.addEventListener("resize", checkScreen);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("resize", checkScreen);
-});
-
-defineExpose({ toggleSidebar });
+const user = computed(() => auth.user);
+const token = computed(() => auth.token);
+const role = computed(() => auth.user?.role_id);
+// const role = 1;
+const logout = () => auth.logout();
 </script>
 
-<style scoped>
-.sidebar {
-  position: fixed;
-  left: 0;
-  top: 0;
-  height: 100vh;
-  background: #0a1a2f;
-  color: #fff;
-  padding: 20px;
-  transition: width 0.3s ease, transform 0.3s ease;
-  z-index: 2000;
-  overflow: hidden;
-  width: 240px; /* full width */
-}
+<template>
+  <input type="checkbox" id="sidebar-toggle" class="d-none" />
+  <label for="sidebar-toggle" class="bg-layer"></label>
 
-/* Collapsed sidebar (desktop toggle) */
-.sidebar.collapsed {
-  width: 70px;
-}
+  <div id="sidebar">
+    <span class="fs-2 d-lg-none" id="close-btn">
+      <label for="sidebar-toggle">
+        <i class="fas fa-chevron-left text-light"></i>
+      </label>
+    </span>
 
-/* Mobile hidden */
-.sidebar:not(.open) {
-  transform: translateX(-100%);
-}
+    <!-- Roles -->
+    <h4 v-if="role === 1" class="text-center">Admin Panel</h4>
+    <h4 v-else-if="role === 2" class="text-center">Vendor Panel</h4>
+    <h4 v-else-if="role === 4" class="text-center">Delivery Staff Panel</h4>
+    <h4 v-else class="text-danger text-center">You are not authorized</h4>
 
-/* Smooth in-out */
-.sidebar.open {
-  transform: translateX(0);
-}
+    <!-- Profile -->
+    <div class="text-center mb-4">
+      <img
+        v-if="user?.photo"
+        :src="user?.photo"
+        class="rounded-circle"
+        width="80"
+        height="80"
+      />
+      <img
+        v-else
+        src="@/assets/img/sohel.jpg"
+        class="rounded-circle"
+        width="80"
+        height="80"
+      />
 
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+      <h5 v-if="role" class="mt-2 mb-0">{{ user?.name }}</h5>
+      <small v-if="role === 1" class="text-light">Administrator</small>
+      <small v-if="role === 2" class="text-light">Seller</small>
+      <small v-if="role === 4" class="text-light">Courier</small>
+      <small v-if="!role" class="text-danger">Unauthorized</small>
+    </div>
 
-.menu {
-  margin-top: 30px;
-  list-style: none;
-  padding: 0;
-}
+    <!-- Menu -->
+    <nav class="navbar sidebar-menu">
+      <ul class="nav flex-column">
 
-.menu li {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 12px 5px;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: 0.3s;
-}
+        <!-- Dashboard -->
+        <li class="nav-item">
+          <RouterLink to="/dashboard" class="nav-link text-light">
+            <i class="fa-solid fa-grip me-2 fa-lg"></i> Dashboard
+          </RouterLink>
+        </li>
 
-.menu li.active {
-  border-left: 4px solid #007bff;
-  background: #112a45;
-}
+        <!-- User Manage (Admin Only) -->
+        <li v-if="role === 1">
+          <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#usersMenu">
+            <i class="fas fa-users me-2 fa-lg"></i> User Manage
+          </a>
+          <div class="collapse" id="usersMenu">
+            <ul class="list-unstyled ps-4">
+              <li><RouterLink to="/users" class="nav-link text-white"><i class="fas fa-user me-2"></i> All Users</RouterLink></li>
+              <li><RouterLink to="/vendors" class="nav-link text-white"><i class="fas fa-store me-2"></i> Vendors</RouterLink></li>
+              <li><RouterLink to="/vendor-requests" class="nav-link text-white"><i class="fas fa-user-clock me-2"></i> Vendor Requests</RouterLink></li>
+              <li><RouterLink to="/delivery-staff" class="nav-link text-white"><i class="fas fa-truck me-2"></i> Delivery Staff</RouterLink></li>
+            </ul>
+          </div>
+        </li>
 
-.menu li:hover {
-  background: #112a45;
-}
+        <!-- Products (Admin+Vendor) -->
+        <li v-if="role === 1 || role === 2">
+          <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#productsMenu">
+            <i class="fas fa-boxes-stacked me-2 fa-lg"></i> Products
+          </a>
+          <div class="collapse" id="productsMenu">
+            <ul class="list-unstyled ps-4">
+              <li><RouterLink to="/products" class="nav-link text-white"><i class="fas fa-box me-2"></i> All Products</RouterLink></li>
+              <li><RouterLink to="/products/create" class="nav-link text-white"><i class="fas fa-plus me-2"></i> Add Product</RouterLink></li>
+              <li><RouterLink to="/categories" class="nav-link text-white"><i class="fas fa-tags me-2"></i> Categories</RouterLink></li>
+              <li><RouterLink to="/brands" class="nav-link text-white"><i class="fas fa-copyright me-2"></i> Brands</RouterLink></li>
+            </ul>
+          </div>
+        </li>
 
-.overlay {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: #00000080;
-  top: 0;
-  left: 0;
-  z-index: 1500;
-}
+        <!-- Profile -->
+        <li v-if="role">
+          <RouterLink to="/profile" class="nav-link text-light">
+            <i class="fas fa-user-circle me-2 fa-lg"></i> Profile
+          </RouterLink>
+        </li>
 
-.close-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 20px;
-}
-</style>
+        <!-- Logout -->
+        <li v-if="role">
+          <button @click="logout" class="nav-link text-light border-0 bg-transparent">
+            <i class="fas fa-sign-out-alt me-2 fa-lg"></i> Logout
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</template>
+
+<style scoped src="./sidebar.css"></style>
