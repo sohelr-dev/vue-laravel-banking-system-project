@@ -3,6 +3,7 @@ export interface UserType {
   name: string
   email: string
   role_id?: number
+  role?: string
   phone?: string
   kyc_status: 'pending' | 'verified' | 'rejected'
   meta?: Record<string, any>

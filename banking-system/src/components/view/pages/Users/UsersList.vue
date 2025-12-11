@@ -30,7 +30,7 @@
                             <td>{{ user.id }}</td>
                             <td>{{ user.name }}</td>
                             <td>{{ user.email }}</td>
-                            <td>{{ user.role_id }}</td>
+                            <td>{{ user.role }}</td>
                             <td>
                                 <span :class="{
                                     'badge bg-warning': user.kyc_status == 'pending',

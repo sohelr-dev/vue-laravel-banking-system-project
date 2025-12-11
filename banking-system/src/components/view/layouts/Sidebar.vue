@@ -27,9 +27,9 @@
 
         <!-- Dashboard -->
         <li class="nav-item">
-          <a href="#" class="nav-link text-light link-navbar active">
+          <router-link to="/" class="nav-link text-light link-navbar active">
             <i class="fa-solid fa-grip me-2 fa-lg"></i> Dashboard
-          </a>
+          </router-link>
         </li>
 
         <!-- User Manage (collapsible) -->
@@ -40,9 +40,9 @@
           </a>
           <div class="collapse" id="usersMenu" data-bs-parent=".sidebar-menu">
             <ul class="list-unstyled ps-4">
-              <li><a href="#" class="nav-link text-white"><i class="fas fa-user me-2"></i> All Users</a></li>
-              <li><a href="#" class="nav-link text-white"><i class="fas fa-user-check me-2"></i> Customers</a></li>
-              <li><a href="#" class="nav-link text-white"><i class="fas fa-user-tie me-2"></i> Tellers</a></li>
+              <li><router-link to="/users" class="nav-link text-white"><i class="fas fa-user me-2"></i> All Users</router-link></li>
+              <li><router-link to="" class="nav-link text-white"><i class="fas fa-user-check me-2"></i> Customers</router-link></li>
+              <li><router-link to="" class="nav-link text-white"><i class="fas fa-user-tie me-2"></i> Tellers</router-link></li>
             </ul>
           </div>
         </li>
