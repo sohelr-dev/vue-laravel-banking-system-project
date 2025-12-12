@@ -1,3 +1,13 @@
+<script setup lang="ts">
+import { useAuthStore } from '@/store/auth';
+  const auth =useAuthStore();
+
+  function handleLogOut(){
+    auth.logout();
+  }
+
+
+</script>
 <template>
   <nav class="navbar topbar-bg bg-opacity-10 p-2">
     <div class="container-fluid d-flex align-items-center flex-nowrap">
@@ -33,13 +43,15 @@
         <div class="dropdown">
           <a class="d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown">
             <img src="/assets/img/custom_icon/man1.png" class="rounded-circle" width="36" height="36" />
-            <span class="fw-semibold d-none d-sm-inline">Sohel Rana</span>
+            <span class="fw-semibold d-none d-sm-inline text-light">{{ auth.user?.name || 'Admin/Cashier'}}</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" href="#">My Profile</a></li>
             <li><a class="dropdown-item" href="#">Settings</a></li>
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="#">Logout</a></li>
+            <li><button type="submit" class="dropdown-item" @click="handleLogOut">
+              <i class="fa fa-sign-out-alt me-2 text-dark-emphasis"></i>
+              Logout</button></li>
           </ul>
         </div>
 
@@ -49,9 +61,7 @@
   </nav>
 </template>
 
-<script setup>
-// static topbar
-</script>
+
 
 <style scoped>
 .topbar {

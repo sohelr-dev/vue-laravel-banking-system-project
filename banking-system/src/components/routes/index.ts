@@ -6,6 +6,8 @@ import Login from "../view/auth/Login.vue";
 import { useAuthStore } from "@/store/auth";
 import Registration from "../view/auth/Registration.vue";
 import DefaultLayout from "../view/layouts/DefaultLayout.vue";
+import CustomerTopbar from "../view/layouts/CustomerTopbar.vue";
+import TellerDashboard from "../view/pages/teller/TellerDashboard.vue";
 
 const routes = [
   { path: '/login', component: Login, meta: { guestOnly: true } },
@@ -26,7 +28,14 @@ const routes = [
       { path: 'dashboard', component: Dashboard, meta: { requiresAuth: true, role: 2 } },
     ]
   },
-]
+  {
+    path:'/customer', component: CustomerTopbar,
+    children: [
+      { path: 'dashboard', component: TellerDashboard, meta: { requiresAuth: true, role: 3 } },
+      { path: 'user', component: TellerDashboard, meta: { requiresAuth: true, role: 3 } },
+    ]
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(),
