@@ -15,18 +15,28 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
-            'password' => 'required|string',
+            'password' => 'required|string|min:6|confirmed',
+
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => 1,
         ]);
 
-        $token = $user->createToken('api_token')->plainTextToken;
-
-        return response()->json(['user' => $user, 'token' => $token]);
+        if(!$user){
+            return response()->Json([
+                'success'=>false,
+                'message'=>'Registration failed'
+            ]);
+        }
+        return response()->json([
+            'user' => $user,
+            'massage'=>'Registration successfully',
+            'success'=>true
+         ],201);
     }
 
     public function login(Request $request)
@@ -36,17 +46,29 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->select('role_id','id','email','password','name')->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+        if ($user ){
+            if(Hash::check($request->password, $user->password)){
+                $token = $user->createToken('web-token')->plainTextToken;
+                return response()->json([
+                    'user' => $user,
+                    'token' => $token,
+                    'success'=>true
+                ]);
+            }else{
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Password does not match'
+                ], 401);
+            }
+        }else{
+            return response()->json([
+                'error' => true,
+                'message' => 'Email does not match'
+            ], 401);
         }
 
-        $token = $user->createToken('api_token')->plainTextToken;
-
-        return response()->json(['user' => $user, 'token' => $token]);
     }
 
     public function logout()
