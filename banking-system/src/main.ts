@@ -8,9 +8,9 @@ import myRoutes from './components/routes'
 import { createPinia } from 'pinia'
 
 const pinia =createPinia();
+const app =createApp(App);
 
 
-createApp(App)
-.use(myRoutes)
-.use(pinia)
-.mount('#app')
+app.use(pinia)
+app.use(myRoutes)
+app.mount('#app')

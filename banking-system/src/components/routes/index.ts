@@ -3,23 +3,63 @@ import Dashboard from "../view/pages/Dashboard.vue";
 import UsersList from "../view/pages/Users/UsersList.vue";
 import UsersDetails from "../view/pages/Users/UsersDetails.vue";
 import Login from "../view/auth/Login.vue";
-import App from "@/App.vue";
+import { useAuthStore } from "@/store/auth";
+import Registration from "../view/auth/Registration.vue";
 import DefaultLayout from "../view/layouts/DefaultLayout.vue";
 
+const routes = [
+  { path: '/login', component: Login, meta: { guestOnly: true } },
+  { path: '/register', component: Registration, meta: { guestOnly: true } },
 
-const myRoutes =createRouter({
-    history:createWebHistory(),
-    routes:[
-        {path:'/', redirect:'/dashboard',
-            children:[
-                {path:'dashboard',component:Dashboard},
-                {path:'users',component:UsersList},
-                {path:'users/user-details/:id',component:UsersDetails},
-            ]
-        },
-        {path:'/login',component:Login},
-    ], 
-    
-    
+  { 
+    path: '/', component: DefaultLayout,
+    children: [
+      {path: '', redirect: '/dashboard'},
+      { path: 'dashboard', component: Dashboard, meta: { requiresAuth: true, role: 1 } },
+      { path: 'users', component: UsersList, meta: { requiresAuth: true, role: 1 } },
+      { path: 'users/user-details/:id', component: UsersDetails, meta: { requiresAuth: true, role: 1 } },
+    ]
+  },
+  {
+    path:'/teller', component: DefaultLayout,
+    children: [
+      { path: 'dashboard', component: Dashboard, meta: { requiresAuth: true, role: 2 } },
+    ]
+  },
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
 })
-export default myRoutes;
+
+router.beforeEach((to, from, next) => {
+  const auth = useAuthStore();
+
+  if (to.meta.requiresAuth) {
+    if (!auth.isauthenticated) return next('/login');
+
+    if (to.meta.role && auth.user?.role_id !== to.meta.role) {
+      // redirect to own dashboard
+      switch(auth.user?.role_id) {
+        case 1: return next('/dashboard'); // admin
+        case 2: return next('/teller/dashboard');
+        case 3: return next('/customer/dashboard');
+      }
+    }
+  }
+
+  // guest only
+  if (to.meta.guestOnly && auth.isauthenticated) {
+    // logged in user -> redirect
+    switch(auth.userRole) {
+      case 1: return next('/dashboard');
+      case 2: return next('/teller/dashboard');
+      case 3: return next('/customer/dashboard');
+    }
+  }
+
+  next()
+})
+
+export default router;

@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import Login from './components/view/auth/Login.vue';
-import DefaultLayout from './components/view/layouts/DefaultLayout.vue';
 </script>
 <template>
-    <DefaultLayout/>
-    
+    <router-view/>
 </template>
 <style scoped>
 
