@@ -8,6 +8,7 @@ import Registration from "../view/auth/Registration.vue";
 import DefaultLayout from "../view/layouts/DefaultLayout.vue";
 import CustomerTopbar from "../view/layouts/CustomerTopbar.vue";
 import TellerDashboard from "../view/pages/teller/TellerDashboard.vue";
+import TellerManage from "../view/pages/admin/users/tellers/TellerManage.vue";
 
 const routes = [
   { path: '/login', component: Login, meta: { guestOnly: true } },
@@ -20,6 +21,10 @@ const routes = [
       { path: 'dashboard', component: Dashboard, meta: { requiresAuth: true, role: 1 } },
       { path: 'users', component: UsersList, meta: { requiresAuth: true, role: 1 } },
       { path: 'users/user-details/:id', component: UsersDetails, meta: { requiresAuth: true, role: 1 } },
+      
+      //teller
+      { path: 'tellers', component: TellerManage, meta: { requiresAuth: true, role: 1 } },
+
     ]
   },
   {

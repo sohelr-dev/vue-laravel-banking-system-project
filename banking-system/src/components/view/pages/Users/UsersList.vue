@@ -14,48 +14,51 @@
                 <i class="fas fa-users me-2"></i> User List
             </div>
             <div class="card-body p-0">
-                <table class="table table-striped table-hover mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>KYC Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="user in users" :key="user.id">
-                            <td>{{ user.id }}</td>
-                            <td>{{ user.name }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.role }}</td>
-                            <td>
-                                <span :class="{
-                                    'badge bg-warning': user.kyc_status == 'pending',
-                                    'badge bg-success': user.kyc_status == 'verified',
-                                    'badge bg-danger': user.kyc_status == 'rejected'
-                                }">
-                                    {{ user.kyc_status }}
-                                </span>
-                            </td>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>KYC Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="user in users" :key="user.id">
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.role }}</td>
+                                <td>
+                                    <span :class="{
+                                        'badge bg-warning': user.kyc_status == 'pending',
+                                        'badge bg-success': user.kyc_status == 'verified',
+                                        'badge bg-danger': user.kyc_status == 'rejected'
+                                    }">
+                                        {{ user.kyc_status }}
+                                    </span>
+                                </td>
+    
+                                <td class="d-flex gap-2">
+                                    <router-link :to="`users/user-details/${user.id}`" class="btn btn-primary">
+                                        view
+                                    </router-link>
+                                    <router-link :to="`users/user-edit/${user.id}`" class="btn btn-outline-primary">
+                                        Edit
+                                    </router-link>
+    
+                                </td>
+                            </tr>
+                            <tr v-if="users.length === 0">
+                                <td colspan="5" class="text-center py-3">No users found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                            <td class="d-flex gap-2">
-                                <router-link :to="`users/user-details/${user.id}`" class="btn btn-primary">
-                                    view
-                                </router-link>
-                                <router-link :to="`users/user-edit/${user.id}`" class="btn btn-outline-primary">
-                                    Edit
-                                </router-link>
-
-                            </td>
-                        </tr>
-                        <tr v-if="users.length === 0">
-                            <td colspan="5" class="text-center py-3">No users found.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                </div>
             </div>
         </div>
     </div>
