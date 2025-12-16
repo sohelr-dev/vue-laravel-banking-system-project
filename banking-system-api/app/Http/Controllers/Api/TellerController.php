@@ -109,9 +109,7 @@ class TellerController extends Controller
             'branch_id' => 'required|exists:branches,id',
             'daily_cash_limit' => 'nullable|numeric|min:0',
         ]);
-
         DB::beginTransaction();
-
         try {
             //create user
             $user = User::create([
@@ -121,7 +119,6 @@ class TellerController extends Controller
                 'password' => Hash::make($request->password),
                 'role_id' => 2,
             ]);
-
             //create teller
             $teller = Teller::create([
                 'user_id' => $user->id,
@@ -130,10 +127,7 @@ class TellerController extends Controller
                 'designation' => 'Cashier',
                 'daily_cash_limit' => $request->daily_cash_limit ?? 0,
             ]);
-
             //audit log
-
-            // dd(auth()->id());
             DB::table('audit_logs')->insert([
                 'user_id' => $request->auth_id ?? null,
                 'action' => 'teller_created',
@@ -144,13 +138,7 @@ class TellerController extends Controller
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
             ]);
-
-
-
-
-
             DB::commit();
-
             return response()->json([
                 'message' => 'Teller created successfully',
                 'data' => [
