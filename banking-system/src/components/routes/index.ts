@@ -9,6 +9,8 @@ import DefaultLayout from "../view/layouts/DefaultLayout.vue";
 import CustomerTopbar from "../view/layouts/CustomerTopbar.vue";
 import TellerDashboard from "../view/pages/teller/TellerDashboard.vue";
 import TellerManage from "../view/pages/admin/users/tellers/TellerManage.vue";
+import TellerDetails from "../view/pages/admin/users/tellers/TellerDetails.vue";
+import TellerCreate from "../view/pages/admin/users/tellers/TellerCreate.vue";
 
 const routes = [
   { path: '/login', component: Login, meta: { guestOnly: true } },
@@ -24,6 +26,8 @@ const routes = [
       
       //teller
       { path: 'tellers', component: TellerManage, meta: { requiresAuth: true, role: 1 } },
+      { path: 'tellers/details/:id', component: TellerDetails, meta: { requiresAuth: true, role: 1 } },
+      { path: 'tellers/add', component: TellerCreate, meta: { requiresAuth: true, role: 1 } },
 
     ]
   },

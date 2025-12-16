@@ -1,6 +1,10 @@
 export interface TellerType {
   id: number;
   user_id: number;
+  name?: string;
+  teller_name?: string;
+  teller_id?: string;
+  branch_name?: string;
   teller_code?: string;
   branch_id: number;
   designation?: string;
