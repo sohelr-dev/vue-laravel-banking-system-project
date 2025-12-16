@@ -12,19 +12,13 @@ class AuditLog extends Model
     protected $table = 'audit_logs';
 
     protected $fillable = [
-        'user_id',
-        'action',
-        'model',
-        'model_id',
-        'old_values',
-        'new_values',
-        'ip_address',
-        'user_agent',
+        'user_id', 'action', 'model', 'model_id', 
+        'before_data', 'after_data', 'ip_address', 'user_agent'
     ];
 
     protected $casts = [
-        'old_values' => 'array',
-        'new_values' => 'array',
+        'before_data' => 'array',
+        'after_data' => 'array',
     ];
 
     /*

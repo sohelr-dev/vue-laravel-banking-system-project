@@ -8,6 +8,7 @@ use App\Models\Teller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class TellerController extends Controller
 {
@@ -98,39 +99,76 @@ class TellerController extends Controller
 
     public function storeTeller(Request $request)
     {
+        // $auth = auth()->user();
+        // dd($auth->id);
         $request->validate([
-            'name' => 'required|string|max:150',
+            'name' => 'required|string|min:6|max:150',
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|max:30',
             'password' => 'required|min:6',
             'branch_id' => 'required|exists:branches,id',
-            'daily_cash_limit' => 'nullable|numeric',
+            'daily_cash_limit' => 'nullable|numeric|min:0',
         ]);
-        // create user
-        $user =User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'password' => bcrypt($request->password),
-            'role_id' => 2,
-        ]);
-        // create teller
-        $teller = Teller::create([
-            'user_id' => $user->id,
-            'branch_id' => $request->branch_id,
-            'designation' => 'Cashier',
-            'daily_cash_limit' => $request->daily_cash_limit ?? 0,
-        ]);
-        $auth = auth()->user();
-        // optional audit log
-        AuditLog::create([
-            'user_id' => $auth->id,
-            'action' => 'teller_created',
-            'model' => 'User',
-            'model_id' => $user->id,
-        ]);
-        return response()->json(['message' => 'Teller created successfully']);
+
+        DB::beginTransaction();
+
+        try {
+            //create user
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'password' => Hash::make($request->password),
+                'role_id' => 2,
+            ]);
+
+            //create teller
+            $teller = Teller::create([
+                'user_id' => $user->id,
+                'branch_id' => $request->branch_id,
+                'teller_code' => 'TLR'.str_pad($user->id, 6, '0', STR_PAD_LEFT),
+                'designation' => 'Cashier',
+                'daily_cash_limit' => $request->daily_cash_limit ?? 0,
+            ]);
+
+            //audit log
+
+            // dd(auth()->id());
+            DB::table('audit_logs')->insert([
+                'user_id' => $request->auth_id ?? null,
+                'action' => 'teller_created',
+                'model' => 'Teller',
+                'model_id' => $teller->id,
+                'before_data' => '{}',
+                'after_data' => json_encode($teller->toArray()),
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+
+
+
+
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Teller created successfully',
+                'data' => [
+                    'teller_id' => $teller->id,
+                    'user_id' => $user->id
+                ]
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Failed to create teller',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
     public function update(Request $request, string $id)
     {
         //
@@ -148,6 +186,7 @@ class TellerController extends Controller
                 'message' => 'Teller not found'
             ], 404);
         }
+        $teller->delete();
             return response()->json([
                 'success' => true,
                 'message' => 'Teller deleted successfully'
