@@ -17,7 +17,11 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/tellers', [TellerController::class, 'index']);
+    //teller routes
+    Route::get('/tellers', [TellerController::class, 'index']);
+    Route::delete('/tellers/{id}', [TellerController::class, 'destroy']);
+    Route::get('/tellers/teller/{id}', [TellerController::class, 'show']);
+    Route::post('/tellers/create', [TellerController::class, 'storeTeller']);
 
 });
 
