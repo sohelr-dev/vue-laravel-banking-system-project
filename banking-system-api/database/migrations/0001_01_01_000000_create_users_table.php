@@ -23,6 +23,7 @@ return new class extends Migration
             $table->json('meta')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->index('role_id');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

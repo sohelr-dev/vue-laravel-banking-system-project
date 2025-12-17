@@ -18,6 +18,8 @@ return new class extends Migration {
             $table->string('ip_address')->nullable();
             $table->text('user_agent')->nullable();
             $table->timestamps();
+            $table->index('user_id');
+            $table->index('model_id');
         });
     }
 

@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->enum('status', ['pending','verified','rejected'])->default('pending');
             $table->string('remarks', 255)->nullable();
             $table->timestamps();
+            $table->index('customer_id');
         });
     }
 

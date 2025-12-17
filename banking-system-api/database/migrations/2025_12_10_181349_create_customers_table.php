@@ -12,10 +12,13 @@ return new class extends Migration {
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('customer_code', 30)->unique();
             $table->json('kyc_data')->nullable();
+            $table->unsignedBigInteger('branch_id')->nullable();
             $table->date('dob')->nullable();
             $table->text('address')->nullable();
             $table->enum('status', ['active','inactive','closed'])->default('active');
             $table->timestamps();
+            $table->index('user_id');
+            $table->index('branch_id');
         });
     }
 

@@ -19,6 +19,9 @@ return new class extends Migration {
             $table->enum('status', ['active','blocked','closed'])->default('active');
             $table->json('metadata')->nullable();
             $table->timestamps();
+            $table->index('customer_id');
+            $table->index('branch_id');
+            $table->index('account_type_id');
         });
     }
 

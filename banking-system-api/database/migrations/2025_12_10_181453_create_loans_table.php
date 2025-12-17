@@ -20,6 +20,8 @@ return new class extends Migration {
             $table->enum('status', ['applied','approved','disbursed','closed','defaulted','rejected'])->default('applied');
             $table->json('schedule')->nullable();
             $table->timestamps();
+            $table->index('customer_id');
+            
         });
     }
 

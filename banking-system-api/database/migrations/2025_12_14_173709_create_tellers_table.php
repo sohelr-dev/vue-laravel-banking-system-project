@@ -16,8 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id');
 
             $table->string('designation', 50)->default('Cashier');
-            $table->decimal('daily_cash_limit', 18, 2)->default(0);
+            $table->decimal('daily_cash_limit', 18, 4)->default(0);
             $table->enum('status', ['active', 'suspended'])->default('active');
+            $table->decimal('current_till_balance', 18, 4)->default(0.0000);
 
             $table->timestamps();
 

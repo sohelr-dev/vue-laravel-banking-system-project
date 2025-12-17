@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->enum('status', ['pending','paid','overdue'])->default('pending');
             $table->json('meta')->nullable();
             $table->timestamps();
+            $table->index('loan_id');
         });
     }
 

@@ -17,9 +17,16 @@ return new class extends Migration {
             $table->decimal('balance_before', 18, 4);
             $table->decimal('balance_after', 18, 4);
             $table->enum('status', ['pending','completed','failed','cancelled'])->default('pending');
+            $table->unsignedBigInteger('teller_id')->nullable();
             $table->string('narration', 255)->nullable();
             $table->json('meta')->nullable();
             $table->timestamps();
+
+            $table->index('account_id');
+            $table->index('related_account_id');
+            $table->index('type');
+            $table->index('status');
+            $table->index('teller_id');
         });
     }
 
