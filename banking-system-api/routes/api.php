@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //customer routes
     Route::get('/customers', [CustomerController::class, 'index']);
     Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
-    Route::get('/customers/customer/{id}', [CustomerController::class, 'show']);
+    Route::get('/customers/show/{id}', [CustomerController::class, 'show']);
     Route::post('/customers/create', [CustomerController::class, 'store']);
 
 });

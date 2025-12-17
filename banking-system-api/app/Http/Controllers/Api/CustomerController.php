@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -58,11 +59,12 @@ class CustomerController extends Controller
             ->paginate(5);
 
             // dd($customers);
-        if(!$customers){
+        if($customers->isEmpty()){
             return response()->json([
                 'success' => false,
                 'message' => 'No customers found',
-            ], 404);
+                'customers' => []
+            ], 200);
         }
 
         return response()->json([
@@ -84,9 +86,40 @@ class CustomerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+
+        $customer = Customer::with(['user', 'branch', 'accounts', 'kycDocuments', 'loans'])
+            ->find($id);
+
+        if (!$customer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Customer not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer details fetched successfully',
+            'data' => [
+                'profile' => [
+                    'user_id' => $customer->user->id,
+                    'name'    => $customer->user->name,
+                    'email'   => $customer->user->email,
+                    'phone'   => $customer->user->phone,
+                    'code'    => $customer->customer_code,
+                    'branch'  => $customer->branch->name,
+                    'address' => $customer->address,
+                    'dob'     => $customer->dob,
+                    'status'  => $customer->status,
+                    'id'      => $customer->id,
+                ],
+                'accounts'  => $customer->accounts,
+                'documents' => $customer->kycDocuments,
+                'loans'     => $customer->loans
+            ]
+        ], 200);
     }
 
     /**
@@ -102,6 +135,19 @@ class CustomerController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $customer = Customer::find($id);
+        if (!$customer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Customer not found'
+            ], 404);
+        }
+
+        $customer->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer deleted successfully'
+        ], 200);
     }
 }

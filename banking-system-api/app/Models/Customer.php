@@ -36,6 +36,11 @@ class Customer extends Model
     {
         return $this->belongsTo(User::class);
     }
+    // Customer → Branch
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 
     // Customer → Accounts
     public function accounts()
