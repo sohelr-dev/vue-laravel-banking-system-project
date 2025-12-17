@@ -12,6 +12,7 @@ import TellerManage from "../view/pages/admin/users/tellers/TellerManage.vue";
 import TellerDetails from "../view/pages/admin/users/tellers/TellerDetails.vue";
 import TellerCreate from "../view/pages/admin/users/tellers/TellerCreate.vue";
 import CustomerManage from "../view/pages/admin/users/customers/CustomerManage.vue";
+import CustomerDetails from "../view/pages/admin/users/customers/CustomerDetails.vue";
 
 const routes = [
   { path: '/login', component: Login, meta: { guestOnly: true } },
@@ -31,7 +32,7 @@ const routes = [
       { path: 'tellers/add', component: TellerCreate, meta: { requiresAuth: true, role: 1 } },
       //customer
       { path: 'customers', component: CustomerManage, meta: { requiresAuth: true, role: 1 } },
-      { path: 'customers/details/:id', component: TellerDetails, meta: { requiresAuth: true, role: 1 } },
+      { path: 'customers/:id/details', component: CustomerDetails, meta: { requiresAuth: true, role: 1 } },
       { path: 'customers/add', component: TellerCreate, meta: { requiresAuth: true, role: 1 } },
 
     ]

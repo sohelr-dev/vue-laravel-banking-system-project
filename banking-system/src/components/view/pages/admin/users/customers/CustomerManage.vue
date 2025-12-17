@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
 import api from '@/config/config'
+import { ref, onMounted, watch } from 'vue'
+
 
 interface CustomerType {
+    id: number
     customer_id: number
     customer_code: string
     customer_name: string
@@ -31,20 +33,22 @@ api.get('/branches')
 const currentPage = ref(1)
 const lastPage = ref(1)
 
-// Fetch customers function
+// get customers 
 const fetchCustomers = async (page = 1) => {
     loading.value = true
     try {
-        const res = await api.get('customers', {
+        const res = await api.get('customers' ,
+        {
             params: {
                 search: search.value,
                 branch_id: branch.value,
                 status: status.value,
                 page: page
             }
-        })
-        customers.value = res.data.customers.data
+        }
+    )
         console.log(res.data);
+        customers.value = res.data.customers.data
         currentPage.value = res.data.customers.current_page
         lastPage.value = res.data.customers.last_page
     } catch (err) {
@@ -57,7 +61,11 @@ const fetchCustomers = async (page = 1) => {
 }
 
 // Initial fetch
-onMounted(() => fetchCustomers())
+onMounted(() =>{
+    document.title = "Customer Management - Admin Dashboard"
+    fetchCustomers();
+
+})
 
 // Watch filters
 watch([search, branch, status], () => fetchCustomers(1))
@@ -71,7 +79,7 @@ const changePage = (page: number) => {
 </script>
 
 <template>
-    <div class="container-fluid py-4">
+    <div class="container-lg container-fluid-md py-4">
 
         <!-- Page Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -155,7 +163,7 @@ const changePage = (page: number) => {
                             </tr>
 
                             <!-- Customers -->
-                            <tr v-for="(c, index) in customers" :key="c.customer_id">
+                            <tr v-for="(c, index) in customers" :key="c.id">
                                 <td>{{ (currentPage - 1) * 10 + index + 1 }}</td>
                                 <td>
                                     <div class="fw-semibold">{{ c.customer_name ??'N/A' }}</div>
@@ -168,15 +176,23 @@ const changePage = (page: number) => {
                                         <i class="fas fa-wallet me-1"></i> {{ c.accounts_count ?? 'N/A' }}
                                     </span>
                                 </td>
-                                <td>
-                                    <span :class="['badge', c.status == 1 ? 'bg-success' : 'bg-secondary']">
-                                        <i
-                                            :class="c.status == 1 ? 'fas fa-check-circle me-1' : 'fas fa-times-circle me-1'"></i>
-                                        {{ c.status == 1 ? 'Active' : 'Inactive' }}
+                                <td v-if="c.status==='active'">
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle text-white me-1"></i> Active
+                                    </span>
+                                </td>
+                                <td v-else-if="c.status==='inactive'">
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-times-circle text-white me-1"></i> Inactive
+                                    </span>
+                                </td>
+                                <td v-else="c.status==='closed'">
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-lock-circle text-white me-1"></i> Closed
                                     </span>
                                 </td>
                                 <td class="text-end">
-                                    <router-link :to="`/customers/${c.customer_id}`"
+                                    <router-link :to="`/customers/${c.customer_id}/details`"
                                         class="btn btn-sm btn-outline-primary me-1">
                                         <i class="fas fa-eye"></i>
                                     </router-link>
