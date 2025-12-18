@@ -73,16 +73,6 @@ class CustomerController extends Controller
             'customers' => $customers
         ],200);
     }
-
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
     /**
      * Display the specified resource.
      */

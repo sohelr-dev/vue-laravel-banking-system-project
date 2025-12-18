@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\Register\CustomerRegistrationController;
 use App\Http\Controllers\Api\TellerController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -30,10 +31,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/branches/branch/{id}', [BranchController::class, 'show']);
     Route::post('/branches/create', [BranchController::class, 'store']);
     //customer routes
+    Route::post('/customers/register', [CustomerRegistrationController::class, 'register']);
     Route::get('/customers', [CustomerController::class, 'index']);
     Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
     Route::get('/customers/show/{id}', [CustomerController::class, 'show']);
-    Route::post('/customers/create', [CustomerController::class, 'store']);
 
 });
 
