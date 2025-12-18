@@ -2,7 +2,6 @@
 import api from '@/config/config'
 import { ref, onMounted, watch } from 'vue'
 
-
 interface CustomerType {
     id: number
     customer_id: number
@@ -11,43 +10,40 @@ interface CustomerType {
     branch_name: string
     phone: string
     accounts_count: number
-    status: number | string
+    status: string // 'active' | 'inactive' | 'closed'
 }
 
-// Customer list
 const customers = ref<CustomerType[]>([])
 const loading = ref(false)
-
-// Filters
 const search = ref('')
 const branch = ref('')
 const status = ref('')
-
-// Branches
 const branches = ref<any[]>([])
-api.get('/branches')
-    .then(res => { branches.value = res.data.branches })
-    .catch(() => { branches.value = [] })
-
-// Pagination
 const currentPage = ref(1)
 const lastPage = ref(1)
 
-// get customers 
+// Fetch Branches
+const fetchBranches = async () => {
+    try {
+        const res = await api.get('/branches')
+        branches.value = res.data.branches
+    } catch (error) {
+        console.error("Branch fetch failed")
+    }
+}
+
+// Fetch Customers 
 const fetchCustomers = async (page = 1) => {
     loading.value = true
     try {
-        const res = await api.get('customers' ,
-        {
+        const res = await api.get('customers', {
             params: {
                 search: search.value,
                 branch_id: branch.value,
                 status: status.value,
                 page: page
             }
-        }
-    )
-        console.log(res.data);
+        })
         customers.value = res.data.customers.data
         currentPage.value = res.data.customers.current_page
         lastPage.value = res.data.customers.last_page
@@ -60,17 +56,14 @@ const fetchCustomers = async (page = 1) => {
     }
 }
 
-// Initial fetch
-onMounted(() =>{
+onMounted(() => {
     document.title = "Customer Management - Admin Dashboard"
-    fetchCustomers();
-
+    fetchBranches()
+    fetchCustomers()
 })
 
-// Watch filters
 watch([search, branch, status], () => fetchCustomers(1))
 
-// Change page
 const changePage = (page: number) => {
     if (page >= 1 && page <= lastPage.value) {
         fetchCustomers(page)
@@ -79,176 +72,308 @@ const changePage = (page: number) => {
 </script>
 
 <template>
-    <div class="container-lg container-fluid-md py-4">
-
-        <!-- Page Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h4 class="fw-bold mb-0">
-                    <i class="fas fa-users text-primary me-2"></i> Customers
-                </h4>
-                <small class="text-muted">Core Banking • Customer Management</small>
+    <div class="page-content py-4 px-3 px-lg-5 bg-light min-vh-100">
+        <div class="row align-items-center mb-4">
+            <div class="col">
+                <h3 class="fw-bold text-dark-emphasis mb-1">Customer Database</h3>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item text-primary">Core Banking</li>
+                        <li class="breadcrumb-item active">Management</li>
+                    </ol>
+                </nav>
             </div>
-            <router-link to="/customers/create" class="btn btn-primary">
-                <i class="fas fa-user-plus me-1"></i> Add Customer
-            </router-link>
+            <div class="col-auto">
+                <router-link to="/customers/add" class="btn btn-primary shadow-sm px-4 rounded-pill">
+                    <i class="fas fa-plus-circle me-2"></i>New Customer
+                </router-link>
+            </div>
         </div>
 
-        <!-- Filter Card -->
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-body">
-                <div class="row g-3 align-items-end">
-                    <!-- Search -->
-                    <div class="col-md-4">
-                        <label class="form-label">Search</label>
-                        <input type="text" class="form-control" placeholder="Customer name / code / phone"
-                            v-model="search" />
+        <div class="card border-0 shadow-sm mb-4 rounded-4">
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-lg-4">
+                        <div class="input-group input-group-merge">
+                            <span class="input-group-text bg-light border-end-0 text-muted">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control bg-light border-start-0 ps-0"
+                                placeholder="Search name, code or phone..." v-model="search" />
+                        </div>
                     </div>
-
-                    <!-- Branch -->
-                    <div class="col-md-3">
-                        <label class="form-label">Branch</label>
-                        <select class="form-select" v-model="branch">
+                    <div class="col-lg-3">
+                        <select class="form-select bg-light" v-model="branch">
                             <option value="">All Branches</option>
-                            <option v-for="b in branches" :key="b.branch_id" :value="b.branch_id">{{ b.branch_name }}
+                            <option v-for="b in branches" :key="b.branch_id" :value="b.branch_id">
+                                {{ b.branch_name }}
                             </option>
                         </select>
                     </div>
-
-                    <!-- Status -->
-                    <div class="col-md-3">
-                        <label class="form-label">Status</label>
-                        <select class="form-select" v-model="status">
-                            <option value="">All</option>
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
+                    <div class="col-lg-3">
+                        <select class="form-select bg-light" v-model="status">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
                         </select>
                     </div>
-
-                    <!-- Filter Button -->
-                    <div class="col-md-2 text-end">
-                        <button class="btn btn-outline-primary w-100" @click="fetchCustomers(1)">
-                            <i class="fas fa-filter me-1"></i> Filter
+                    <div class="col-lg-2">
+                        <button class="btn btn-dark w-100 rounded-3" @click="fetchCustomers(1)">
+                            <i class="fas fa-sliders-h me-2"></i>Apply
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Table Card -->
-        <div class="card shadow-sm border-0">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-header bg-white py-3 border-bottom border-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">Customer Records</h5>
+                    <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">
+                        Total: {{ customers.length }}
+                    </span>
+                </div>
+            </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
+                    <table class="table table-hover align-middle mb-0 custom-table">
+                        <thead class="bg-light-subtle">
                             <tr>
-                                <th>#</th>
-                                <th>Customer</th>
-                                <th>Phone</th>
+                                <th class="ps-4">#ID</th>
+                                <th>Customer Info</th>
+                                <th>Contact Details</th>
                                 <th>Branch</th>
                                 <th>Accounts</th>
                                 <th>Status</th>
-                                <th class="text-end">Action</th>
+                                <th class="text-end pe-4">Actions</th>
                             </tr>
                         </thead>
-
                         <tbody>
-                            <!-- Loading -->
                             <tr v-if="loading">
-                                <td colspan="7" class="text-center py-4">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="spinner-grow text-primary spinner-grow-sm me-2"></div>
+                                    <span class="text-muted fw-medium">Loading records...</span>
+                                </td>
+                            </tr>
+
+                            <tr v-for="(c, index) in customers" :key="c.id">
+                                <td class="ps-4 text-muted small">
+                                    #{{ (currentPage - 1) * 10 + index + 1 }}
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-initals me-3 text-primary bg-primary-subtle">
+                                            {{ c.customer_name?.charAt(0) }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">{{ c.customer_name }}</div>
+                                            <code class="text-muted small">{{ c.customer_code }}</code>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small fw-medium"><i class="fas fa-phone-alt me-2 text-muted"></i>{{
+                                        c.phone }}</div>
+                                </td>
+                                <td>
+                                    <span class="text-secondary small fw-medium">
+                                        <i class="fas fa-building me-1 opacity-50 text-primary"></i> {{ c.branch_name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="account-pill">
+                                        {{ c.accounts_count }} Accounts
+                                    </div>
+                                </td>
+                                <td>
+                                    <span v-if="c.status === 'active'" class="status-badge active">
+                                        <span class="dot"></span> Active
+                                    </span>
+                                    <span v-else-if="c.status === 'inactive'" class="status-badge inactive">
+                                        <span class="dot"></span> Inactive
+                                    </span>
+                                    <span v-else class="status-badge closed">
+                                        <span class="dot"></span> Closed
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <router-link :to="`/customers/${c.customer_id}/details`"
+                                            class="btn btn-icon-sm btn-light-primary" title="View Details">
+                                            <i class="fas fa-eye text-primary"></i>
+                                        </router-link>
+                                        <button class="btn btn-icon-sm btn-light-danger" title="Suspend">
+                                            <i class="fas fa-ban text-danger"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
 
-                            <!-- Customers -->
-                            <tr v-for="(c, index) in customers" :key="c.id">
-                                <td>{{ (currentPage - 1) * 10 + index + 1 }}</td>
-                                <td>
-                                    <div class="fw-semibold">{{ c.customer_name ??'N/A' }}</div>
-                                    <small class="text-muted">{{ c.customer_code ?? 'N/A' }}</small>
-                                </td>
-                                <td><i class="fas fa-phone text-muted me-1"></i> {{ c.phone ?? 'N/A' }}</td>
-                                <td><i class="fas fa-building text-muted me-1"></i> {{ c.branch_name ?? 'N/A' }}</td>
-                                <td>
-                                    <span class="badge bg-info">
-                                        <i class="fas fa-wallet me-1"></i> {{ c.accounts_count ?? 'N/A' }}
-                                    </span>
-                                </td>
-                                <td v-if="c.status==='active'">
-                                    <span class="badge bg-success">
-                                        <i class="fas fa-check-circle text-white me-1"></i> Active
-                                    </span>
-                                </td>
-                                <td v-else-if="c.status==='inactive'">
-                                    <span class="badge bg-danger">
-                                        <i class="fas fa-times-circle text-white me-1"></i> Inactive
-                                    </span>
-                                </td>
-                                <td v-else="c.status==='closed'">
-                                    <span class="badge bg-secondary">
-                                        <i class="fas fa-lock-circle text-white me-1"></i> Closed
-                                    </span>
-                                </td>
-                                <td class="text-end">
-                                    <router-link :to="`/customers/${c.customer_id}/details`"
-                                        class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="fas fa-eye"></i>
-                                    </router-link>
-                                    <button class="btn btn-sm btn-outline-danger">
-                                        <i class="fas fa-ban"></i>
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <!-- Empty -->
                             <tr v-if="!loading && customers.length === 0">
-                                <td colspan="7" class="text-center py-4 text-muted">
-                                    <i class="fas fa-user-slash fa-2x mb-2"></i>
-                                    <div>No customers found</div>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-folder-open fa-3x text-light-emphasis mb-3"></i>
+                                        <p class="text-muted fw-medium">No results found for your search.</p>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+            <div class="card-footer bg-white py-3 border-top border-light">
+                <nav class="d-flex justify-content-between align-items-center">
+                    <span class="small text-muted fw-medium">Page {{ currentPage }} of {{ lastPage }}</span>
+                    <ul class="pagination pagination-sm mb-0 gap-1">
+                        <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                            <button class="page-link rounded-circle border-0 bg-light"
+                                @click="changePage(currentPage - 1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                        </li>
+                        <li v-for="page in lastPage" :key="page" class="page-item">
+                            <button class="page-link rounded-circle border-0 mx-1"
+                                :class="currentPage === page ? 'bg-primary text-white shadow-sm' : 'bg-light text-dark'"
+                                @click="changePage(page)">{{ page }}</button>
+                        </li>
+                        <li class="page-item" :class="{ disabled: currentPage === lastPage }">
+                            <button class="page-link rounded-circle border-0 bg-light"
+                                @click="changePage(currentPage + 1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
-
-        <!-- Pagination -->
-        <nav v-if="lastPage > 1" class="mt-3">
-            <ul class="pagination justify-content-end">
-                <li :class="['page-item', currentPage === 1 ? 'disabled' : '']">
-                    <button class="page-link" @click="changePage(currentPage - 1)">Previous</button>
-                </li>
-                <li v-for="page in lastPage" :key="page" :class="['page-item', currentPage === page ? 'active' : '']">
-                    <button class="page-link" @click="changePage(page)">{{ page }}</button>
-                </li>
-                <li :class="['page-item', currentPage === lastPage ? 'disabled' : '']">
-                    <button class="page-link" @click="changePage(currentPage + 1)">Next</button>
-                </li>
-            </ul>
-        </nav>
-
     </div>
 </template>
 
 <style scoped>
-.table th {
-    font-size: 0.85rem;
+/* Table Styling */
+.custom-table thead th {
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
     color: #6c757d;
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid #f0f2f5;
 }
 
-.table td {
-    vertical-align: middle;
+.custom-table tbody td {
+    padding: 1rem;
+    font-size: 16px;
+    color: #495057;
 }
 
-.card {
-    border-radius: 0.75rem;
+/* Avatar Initials */
+.avatar-initals {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
 }
 
-.badge {
-    font-weight: 500;
+/* Account Pill */
+.account-pill {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* Status Badges Styling */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-badge.active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-badge.active .dot {
+    background-color: #2e7d32;
+}
+
+.status-badge.inactive {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.status-badge.inactive .dot {
+    background-color: #c62828;
+}
+
+.status-badge.closed {
+    background-color: #f5f5f5;
+    color: #616161;
+}
+
+.status-badge.closed .dot {
+    background-color: #616161;
+}
+
+/* Buttons */
+.btn-icon-sm {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.2s;
+}
+
+.btn-light-primary {
+    background: #e7f1ff;
+}
+
+.btn-light-primary:hover {
+    background: #0d6efd;
+}
+
+.btn-light-primary:hover i {
+    color: white !important;
+}
+
+.btn-light-danger {
+    background: #fff0f0;
+}
+
+.btn-light-danger:hover {
+    background: #dc3545;
+}
+
+.btn-light-danger:hover i {
+    color: white !important;
+}
+
+/* Page Background */
+.bg-light {
+    background-color: #f4f7fa !important;
 }
 </style>
