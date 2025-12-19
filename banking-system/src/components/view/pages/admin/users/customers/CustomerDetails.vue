@@ -81,7 +81,7 @@ const calculateProgress = (principal: string, outstanding: string) => {
 
         <div class="row g-4">
             <div class="col-xl-4 col-lg-5">
-                <div class="card shadow-sm border-0 mb-4">
+                <div class="card shadow-lg  mb-4">
                     <div class="card-body text-center py-4">
                         <div class="avatar-circle mx-auto mb-3">
                             {{ customer?.name.charAt(0) }}
@@ -112,7 +112,7 @@ const calculateProgress = (principal: string, outstanding: string) => {
                     </div>
                 </div>
 
-                <div class="card shadow-sm border-0">
+                <div class="card shadow-lg border-0">
                     <div class="card-header bg-white fw-bold py-3">
                         <i class="fas fa-file-invoice me-2 text-primary"></i>KYC Documents
                     </div>
@@ -136,7 +136,7 @@ const calculateProgress = (principal: string, outstanding: string) => {
             </div>
 
             <div class="col-xl-8 col-lg-7">
-                <div class="card shadow-sm border-0 mb-4">
+                <div class="card shadow-lg border-2 mb-4">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
                         <span class="fw-bold"><i class="fas fa-university me-2 text-primary"></i>Linked Accounts</span>
                         <button class="btn btn-link btn-sm text-decoration-none">+ Open Account</button>
@@ -171,7 +171,7 @@ const calculateProgress = (principal: string, outstanding: string) => {
                     </div>
                 </div>
 
-                <div class="card shadow-sm border-0">
+                <div class="card shadow-lg border-1">
                     <div class="card-header bg-white fw-bold py-3">
                         <i class="fas fa-hand-holding-usd me-2 text-primary"></i>Active Loans
                     </div>

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Dashboard from "../view/pages/Dashboard.vue";
+import Dashboard from "../view/pages/admin/Dashboard.vue";
 import UsersList from "../view/pages/Users/UsersList.vue";
 import UsersDetails from "../view/pages/Users/UsersDetails.vue";
 import Login from "../view/auth/Login.vue";
@@ -14,6 +14,7 @@ import TellerCreate from "../view/pages/admin/users/tellers/TellerCreate.vue";
 import CustomerManage from "../view/pages/admin/users/customers/CustomerManage.vue";
 import CustomerDetails from "../view/pages/admin/users/customers/CustomerDetails.vue";
 import CustomerRegister from "../view/pages/admin/users/customers/CustomerRegister.vue";
+import Deposit from "../view/pages/teller/transactions/Deposit.vue";
 
 const routes = [
   { path: '/login', component: Login, meta: { guestOnly: true } },
@@ -41,10 +42,12 @@ const routes = [
   {
     path:'/teller', component: DefaultLayout,
     children: [
-      { path: 'dashboard', component: Dashboard, meta: { requiresAuth: true, role: 2 } },
+      { path: 'dashboard', component: TellerDashboard, meta: { requiresAuth: true, role: 2 } },
       { path: '/customer-accounts', component: CustomerManage, meta: { requiresAuth: true, role: 2 } },
       { path: '/customer-accounts/add', component: CustomerRegister, meta: { requiresAuth: true, role: 2 } },
       { path: '/customer-accounts/:id/details', component: CustomerDetails, meta: { requiresAuth: true, role: 2 } },
+      //deposit
+      { path: '/teller/deposit', component: Deposit, meta: { requiresAuth: true, role: 2 } },
     ]
   },
   {

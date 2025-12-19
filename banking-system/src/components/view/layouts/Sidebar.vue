@@ -131,7 +131,7 @@ const role = auth.user?.role_id || 0;
               <i class="fas fa-users me-2"></i> Customer Accounts
             </router-link></li>
 
-          <li><router-link to="/deposit" class="nav-link text-white">
+          <li><router-link to="/teller/deposit" class="nav-link text-white">
               <i class="fas fa-arrow-down me-2"></i> Cash Deposit
             </router-link></li>
 
