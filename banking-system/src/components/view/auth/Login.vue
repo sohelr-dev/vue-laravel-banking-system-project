@@ -2,7 +2,7 @@
 import { defaultUser, type UserType } from '@/components/interfaces/users.interfaces';
 import api from '@/config/config';
 import { useAuthStore } from '@/store/auth';
-import { reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
 
@@ -31,6 +31,9 @@ import { useRouter } from 'vue-router';
     })
 
   }
+  onMounted(()=>{
+    document.title="Login"
+  });
 
 </script>
 <template>

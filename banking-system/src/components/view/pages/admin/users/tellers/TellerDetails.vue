@@ -33,8 +33,11 @@ const fetchTeller = async () => {
         loading.value = false;
     }
 };
+onMounted(() => {
+    document.title = "Customers Details";
+    fetchTeller();
+});
 
-onMounted(fetchTeller);
 </script>
 
 <template>

@@ -1,3 +1,53 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import api from '@/config/config';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/store/auth';
+
+const router = useRouter();
+const currentStep = ref(1);
+const loading = ref(false);
+
+const form = ref({
+    name: '', email: '', phone: '', password: '',
+    dob: '', address: '',
+    branch_id: 0, account_type_id: 0
+});
+
+const branches = ref<any[]>([]);
+const accountTypes = ref<any[]>([]);
+const auth =useAuthStore();
+const role = auth.user?.role_id;
+
+onMounted(async () => {
+    // Fetch branches and account types for dropdowns
+    const branchRes = await api.get('branches');
+    branches.value = branchRes.data.branches;
+
+    const typeRes = await api.get('account-types');
+    accountTypes.value = typeRes.data.types;
+});
+
+const submitRegistration = async () => {
+    // console.log(form.value);
+    loading.value = true;
+    try {
+        await api.post('customers/register', form.value);
+        alert("Registration Successful!");
+        if(role == 1){
+            router.push('/customers');
+        }
+        if(role == 2){
+            router.push('/customer-accounts')
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Error occurred during registration.");
+    } finally {
+        loading.value = false;
+    }
+};
+</script>
 <template>
     <div class="container py-5">
         <div class="row justify-content-center">
@@ -42,7 +92,7 @@
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold">Email Address</label>
                                         <input v-model="form.email" type="email" class="form-control px-3 py-2"
-                                            placeholder="email@bank.com">
+                                            placeholder="example@gmail.com">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold">Phone Number</label>
@@ -129,48 +179,6 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import api from '@/config/config';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
-const currentStep = ref(1);
-const loading = ref(false);
-
-const form = ref({
-    name: '', email: '', phone: '', password: '',
-    dob: '', address: '',
-    branch_id: 0, account_type_id: 0
-});
-
-const branches = ref<any[]>([]);
-const accountTypes = ref<any[]>([]);
-
-onMounted(async () => {
-    // Fetch branches and account types for dropdowns
-    const branchRes = await api.get('branches');
-    branches.value = branchRes.data.branches;
-
-    const typeRes = await api.get('account-types');
-    accountTypes.value = typeRes.data.types;
-});
-
-const submitRegistration = async () => {
-    loading.value = true;
-    try {
-        await api.post('customers/register', form.value);
-        alert("Registration Successful!");
-        router.push('/customers');
-    } catch (error) {
-        console.error(error);
-        alert("Error occurred during registration.");
-    } finally {
-        loading.value = false;
-    }
-};
-</script>
-
 <style scoped>
 .bg-navy {
     background-color: #1a237e;
@@ -185,7 +193,6 @@ const submitRegistration = async () => {
     border-color: #1a237e;
 }
 
-/* Stepper CSS */
 .stepper-wrapper {
     position: relative;
     margin-bottom: 20px;

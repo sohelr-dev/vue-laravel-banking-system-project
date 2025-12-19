@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import api from '@/config/config'
+import { useAuthStore } from '@/store/auth'
 import { ref, onMounted, watch } from 'vue'
 
 interface CustomerType {
@@ -56,6 +57,10 @@ const fetchCustomers = async (page = 1) => {
     }
 }
 
+const auth =useAuthStore();
+const role= auth.user?.role_id;
+// console.log(role);
+
 onMounted(() => {
     document.title = "Customer Management - Admin Dashboard"
     fetchBranches()
@@ -83,8 +88,13 @@ const changePage = (page: number) => {
                     </ol>
                 </nav>
             </div>
-            <div class="col-auto">
+            <div class="col-auto" v-if="role==1">
                 <router-link to="/customers/add" class="btn btn-primary shadow-sm px-4 rounded-pill">
+                    <i class="fas fa-plus-circle me-2"></i>New Customer
+                </router-link>
+            </div>
+            <div class="col-auto" v-if="role==2">
+                <router-link to="/customer-accounts/add" class="btn btn-primary shadow-sm px-4 rounded-pill">
                     <i class="fas fa-plus-circle me-2"></i>New Customer
                 </router-link>
             </div>
@@ -198,8 +208,17 @@ const changePage = (page: number) => {
                                     </span>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <div class="d-flex justify-content-end gap-2">
+                                    <div class="d-flex justify-content-end gap-2" v-if="role==1">
                                         <router-link :to="`/customers/${c.customer_id}/details`"
+                                            class="btn btn-icon-sm btn-light-primary" title="View Details">
+                                            <i class="fas fa-eye text-primary"></i>
+                                        </router-link>
+                                        <button class="btn btn-icon-sm btn-light-danger" title="Suspend">
+                                            <i class="fas fa-ban text-danger"></i>
+                                        </button>
+                                    </div>
+                                    <div class="d-flex justify-content-end gap-2" v-if="role==2">
+                                        <router-link :to="`/customer-accounts/${c.customer_id}/details`"
                                             class="btn btn-icon-sm btn-light-primary" title="View Details">
                                             <i class="fas fa-eye text-primary"></i>
                                         </router-link>

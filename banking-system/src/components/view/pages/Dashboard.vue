@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/store/auth';
+import { onMounted } from 'vue';
 
     const title ='Dashboard';
     const auth =useAuthStore();
     console.log(auth.user?.name);
+
+ onMounted(()=>{
+    document.title="Dashboard | Admin";
+ });
 
 </script>
 <template>

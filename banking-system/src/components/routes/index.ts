@@ -42,6 +42,9 @@ const routes = [
     path:'/teller', component: DefaultLayout,
     children: [
       { path: 'dashboard', component: Dashboard, meta: { requiresAuth: true, role: 2 } },
+      { path: '/customer-accounts', component: CustomerManage, meta: { requiresAuth: true, role: 2 } },
+      { path: '/customer-accounts/add', component: CustomerRegister, meta: { requiresAuth: true, role: 2 } },
+      { path: '/customer-accounts/:id/details', component: CustomerDetails, meta: { requiresAuth: true, role: 2 } },
     ]
   },
   {

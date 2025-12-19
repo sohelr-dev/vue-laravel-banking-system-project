@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '@/config/config';
+import { useAuthStore } from '@/store/auth';
 
 const route = useRoute();
 const router = useRouter();
@@ -10,6 +11,9 @@ const customerDoc = ref<any>(null);
 const customerAcc = ref<any>(null);
 const customerLoan = ref<any>(null);
 const loading = ref(true);
+
+const auth = useAuthStore();
+const role = auth.user?.role_id;
 
 const fetchCustomerDetails = async () => {
     const id = route.params.id;
@@ -50,9 +54,16 @@ const calculateProgress = (principal: string, outstanding: string) => {
                 <h4 class="mb-0 text-navy fw-bold">
                     <i class="fas fa-id-card me-2"></i>Customer View
                 </h4>
-                <nav aria-label="breadcrumb">
+                <nav aria-label="breadcrumb" v-if="role ==1">
                     <ol class="breadcrumb mb-0">
                         <li class="breadcrumb-item"><a href="#" @click.prevent="router.push('/customers')">Customers</a>
+                        </li>
+                        <li class="breadcrumb-item active">{{ customer?.code }}</li>
+                    </ol>
+                </nav>
+                <nav aria-label="breadcrumb" v-if="role ==2">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="#" @click.prevent="router.push('/customer-accounts')">Customers</a>
                         </li>
                         <li class="breadcrumb-item active">{{ customer?.code }}</li>
                     </ol>
@@ -109,14 +120,14 @@ const calculateProgress = (principal: string, outstanding: string) => {
                         <div v-for="doc in customerDoc" :key="doc.id"
                             class="list-group-item d-flex justify-content-between align-items-center py-3">
                             <div>
-                                <p class="mb-0 fw-bold text-capitalize small">{{ doc.document_type }}</p>
-                                <small :class="doc.status === 'verified' ? 'text-success' : 'text-warning'">
+                                <p class="mb-0 fw-bold text-capitalize small">{{ doc?.document_type }}</p>
+                                <small :class="doc?.status === 'verified' ? 'text-success' : 'text-warning'">
                                     <i class="fas"
-                                        :class="doc.status === 'verified' ? 'fa-check-circle' : 'fa-clock'"></i> {{
+                                        :class="doc?.status === 'verified' ? 'fa-check-circle' : 'fa-clock'"></i> {{
                                     doc.status }}
                                 </small>
                             </div>
-                            <a :href="doc.file_path" target="_blank" class="btn btn-light btn-sm border">
+                            <a :href="doc?.file_path" target="_blank" class="btn btn-light btn-sm border">
                                 <i class="fas fa-eye text-primary"></i>
                             </a>
                         </div>
@@ -141,17 +152,17 @@ const calculateProgress = (principal: string, outstanding: string) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="acc in customerAcc" :key="acc.id">
+                                <tr v-for="acc in customerAcc" :key="acc?.id">
                                     <td class="ps-3">
-                                        <div class="fw-bold text-navy">{{ acc.account_no }}</div>
-                                        <small class="text-muted">{{ acc.currency }}</small>
+                                        <div class="fw-bold text-navy">{{ acc?.account_no }}</div>
+                                        <small class="text-muted">{{ acc?.currency }}</small>
                                     </td>
                                     <td><span class="badge bg-light text-dark border text-capitalize">{{
-                                            acc.metadata.purpose }}</span></td>
-                                    <td class="text-end fw-bold text-primary">৳ {{ formatNum(acc.balance) }}</td>
+                                            acc?.metadata?.purpose ??'N/A' }}</span></td>
+                                    <td class="text-end fw-bold text-primary">৳ {{ formatNum(acc?.balance) }}</td>
                                     <td class="text-center">
-                                        <span :class="acc.status === 'active' ? 'text-success' : 'text-danger'">
-                                            <i class="fas fa-circle fs-xs me-1"></i>{{ acc.status }}
+                                        <span :class="acc?.status === 'active' ? 'text-success' : 'text-danger'">
+                                            <i class="fas fa-circle fs-xs me-1"></i>{{ acc?.status }}
                                         </span>
                                     </td>
                                 </tr>
@@ -169,27 +180,27 @@ const calculateProgress = (principal: string, outstanding: string) => {
                             <div v-for="loan in customerLoan" :key="loan.id" class="col-md-6">
                                 <div class="p-3 border rounded bg-light-blue">
                                     <div class="d-flex justify-content-between mb-2">
-                                        <span class="fw-bold text-navy">{{ loan.loan_no }}</span>
-                                        <span class="badge bg-primary">{{ loan.status }}</span>
+                                        <span class="fw-bold text-navy">{{ loan?.loan_no }}</span>
+                                        <span class="badge bg-primary">{{ loan?.status }}</span>
                                     </div>
                                     <div class="small mb-1">Outstanding Amount:</div>
-                                    <h5 class="fw-bold mb-3 text-danger">৳ {{ formatNum(loan.outstanding_amount) }}</h5>
+                                    <h5 class="fw-bold mb-3 text-danger">৳ {{ formatNum(loan?.outstanding_amount) }}</h5>
 
                                     <div class="progress mb-2" style="height: 6px;">
                                         <div class="progress-bar" role="progressbar"
-                                            :style="{ width: calculateProgress(loan.principal_amount, loan.outstanding_amount) + '%' }"
-                                            :aria-valuenow="calculateProgress(loan.principal_amount, loan.outstanding_amount)"
+                                            :style="{ width: calculateProgress(loan?.principal_amount, loan?.outstanding_amount) + '%' }"
+                                            :aria-valuenow="calculateProgress(loan?.principal_amount, loan?.outstanding_amount)"
                                             aria-valuemin="0" aria-valuemax="100">
                                         </div>
                                     </div>
 
                                     <div class="d-flex justify-content-between small text-muted">
-                                        <span>Paid: {{ calculateProgress(loan.principal_amount, loan.outstanding_amount)
+                                        <span>Paid: {{ calculateProgress(loan?.principal_amount, loan?.outstanding_amount)
                                             }}%</span>
-                                        <span>Remaining: ৳ {{ formatNum(loan.outstanding_amount) }}</span>
+                                        <span>Remaining: ৳ {{ formatNum(loan?.outstanding_amount) }}</span>
                                     </div>
-                                    <small class="text-muted">Interest Rate: {{ loan.interest_rate }}% | Months: {{
-                                        loan.term_months }}</small>
+                                    <small class="text-muted">Interest Rate: {{ loan?.interest_rate }}% | Months: {{
+                                        loan?.term_months }}</small>
                                 </div>
                             </div>
                         </div>
