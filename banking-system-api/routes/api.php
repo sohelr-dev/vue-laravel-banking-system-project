@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\Register\CustomerRegistrationController;
 use App\Http\Controllers\Api\TellerController;
 use App\Http\Controllers\Api\TellerDashboardController;
+use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/tellers/{id}', [TellerController::class, 'destroy']);
     Route::get('/tellers/teller/{id}', [TellerController::class, 'show']);
     Route::post('/tellers/create', [TellerController::class, 'storeTeller']);
+
+    //transactions
+    Route::get('/accounts/search', [TransactionController::class, 'searchAccount']);
+    Route::post('/transactions/deposit', [TransactionController::class, 'deposit']);
     //branch routes
     Route::get('/branches', [BranchController::class, 'index']);
     Route::delete('/branches/{id}', [BranchController::class, 'destroy']);
