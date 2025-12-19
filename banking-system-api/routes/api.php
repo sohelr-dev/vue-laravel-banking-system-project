@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\Register\CustomerRegistrationController;
 use App\Http\Controllers\Api\TellerController;
+use App\Http\Controllers\Api\TellerDashboardController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,7 @@ Route::get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     //teller routes
+    Route::get('/teller/dashboard-summary', [TellerDashboardController::class, 'getSummary']);
     Route::get('/tellers', [TellerController::class, 'index']);
     Route::delete('/tellers/{id}', [TellerController::class, 'destroy']);
     Route::get('/tellers/teller/{id}', [TellerController::class, 'show']);
