@@ -18,6 +18,7 @@ class Customer extends Model
         'dob',
         'address',
         'status',
+        'branch_id',
     ];
 
     protected $casts = [

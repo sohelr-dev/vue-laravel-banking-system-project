@@ -7,6 +7,7 @@ use App\Models\AuditLog;
 use App\Models\Teller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -75,7 +76,8 @@ class AuthController extends Controller
 
     public function logout()
     {
-        auth()->user()->tokens()->delete();
+        $user =Auth::user();
+        $user->tokens()->delete();
         return response()->json([
             'success' => true,
             'message' => 'Logout successfully'
@@ -85,5 +87,5 @@ class AuthController extends Controller
     /**
      * Store for teller registration.
      */
-    
+
 }

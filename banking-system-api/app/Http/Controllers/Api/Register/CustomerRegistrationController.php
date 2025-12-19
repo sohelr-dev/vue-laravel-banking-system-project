@@ -25,6 +25,7 @@ class CustomerRegistrationController extends Controller
             'address' => 'nullable|string',
             'dob' => 'nullable|date',
         ]);
+        $branch_id=$request->branch_id;
 
         DB::beginTransaction();
         try {
@@ -39,7 +40,7 @@ class CustomerRegistrationController extends Controller
             $customer = Customer::create([
                 'user_id' => $user->id,
                 'customer_code' => 'CUST-' . strtoupper(Str::random(6)),
-                'branch_id' => $request->branch_id,
+                'branch_id' => $branch_id,
                 'dob' => $request->dob,
                 'address' => $request->address,
                 'status' => 'active',
@@ -47,7 +48,7 @@ class CustomerRegistrationController extends Controller
             $account = Account::create([
                 'account_no' => 'ACC-' . date('Y') . mt_rand(100000, 999999),
                 'customer_id' => $customer->id,
-                'branch_id' => $request->branch_id,
+                'branch_id' => $branch_id,
                 'account_type_id' => $request->account_type_id,
                 'currency' => 'BDT',
                 'balance' => 0,

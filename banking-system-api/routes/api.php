@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AccountTypeController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\CustomerController;
@@ -30,6 +31,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/branches/{id}', [BranchController::class, 'destroy']);
     Route::get('/branches/branch/{id}', [BranchController::class, 'show']);
     Route::post('/branches/create', [BranchController::class, 'store']);
+    //account Type routes
+    Route::get('/account-types', [AccountTypeController::class, 'index']);
+    Route::delete('/account-types/{id}', [BranchController::class, 'destroy']);
+    Route::get('/account-types/account-type/{id}', [BranchController::class, 'show']);
+    Route::post('/account-types/create', [BranchController::class, 'store']);
     //customer routes
     Route::post('/customers/register', [CustomerRegistrationController::class, 'register']);
     Route::get('/customers', [CustomerController::class, 'index']);

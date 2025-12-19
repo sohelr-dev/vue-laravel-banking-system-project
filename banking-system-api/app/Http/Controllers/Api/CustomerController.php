@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
@@ -14,12 +15,19 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = DB::table('customers as c')
+        $user = Auth::user();
+        // dd($user);
+        $query = DB::table('customers as c')
             ->join('users as u', 'c.user_id', '=', 'u.id')
             ->join('branches as b', 'c.branch_id', '=', 'b.id')
-            ->leftJoin('accounts as a', 'c.id', '=', 'a.customer_id')
+            ->leftJoin('accounts as a', 'c.id', '=', 'a.customer_id');
+            if ($user->role_id === 2) {
+                $tellerBranchId = DB::table('tellers')->where('user_id', $user->id)->value('branch_id');
+                $query->where('c.branch_id', $tellerBranchId);
+                // dd($tellerBranchId);
+            }
 
-            ->select(
+            $customers=$query->select(
                 'c.id as customer_id',
                 'c.customer_code',
                 'u.name as customer_name',
@@ -63,14 +71,16 @@ class CustomerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'No customers found',
-                'customers' => []
+                'customers' => [],
+                'user'=>$user->id
             ], 200);
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Customer list fetched successfully',
-            'customers' => $customers
+            'customers' => $customers,
+
         ],200);
     }
     /**

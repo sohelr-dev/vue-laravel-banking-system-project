@@ -7,6 +7,7 @@ use App\Models\AuditLog;
 use App\Models\Teller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -128,15 +129,21 @@ class TellerController extends Controller
                 'daily_cash_limit' => $request->daily_cash_limit ?? 0,
             ]);
             //audit log
+            $user = Auth::user();
             DB::table('audit_logs')->insert([
-                'user_id' => $request->auth_id ?? null,
+                'user_id' => $user->id ?? $request->auth_id,
                 'action' => 'teller_created',
                 'model' => 'Teller',
                 'model_id' => $teller->id,
-                'before_data' => '{}',
-                'after_data' => json_encode($teller->toArray()),
+                'before_data' => json_encode([]),
+                'after_data' => json_encode([
+                                'user' => $user->only(['id', 'name', 'email']),
+                                $teller->toArray(),
+
+                                ]),
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
+                'created_at' => now(),
             ]);
             DB::commit();
             return response()->json([
