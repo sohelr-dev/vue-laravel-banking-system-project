@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 const stats = ref([
     { title: 'Total Customers', value: '12,450', icon: 'fas fa-users', color: 'primary', growth: '+12%' },
     { title: 'Total Deposits', value: 'BDT 8.5M', icon: 'fas fa-piggy-bank', color: 'success', growth: '+5.4%' },
@@ -12,6 +12,9 @@ const branchPerformance = ref([
     { name: 'Chittagong South', customers: 2100, status: 'Medium' },
     { name: 'Sylhet East', customers: 1200, status: 'Low' }
 ])
+onMounted(()=>{
+    document.title= "Dashboard | Admin";
+})
 </script>
 
 <template>

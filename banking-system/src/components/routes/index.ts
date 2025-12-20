@@ -15,6 +15,7 @@ import CustomerManage from "../view/pages/admin/users/customers/CustomerManage.v
 import CustomerDetails from "../view/pages/admin/users/customers/CustomerDetails.vue";
 import CustomerRegister from "../view/pages/admin/users/customers/CustomerRegister.vue";
 import Deposit from "../view/pages/teller/transactions/Deposit.vue";
+import Withdraw from "../view/pages/teller/transactions/Withdraw.vue";
 
 const routes = [
   { path: '/login', component: Login, meta: { guestOnly: true } },
@@ -46,8 +47,9 @@ const routes = [
       { path: '/customer-accounts', component: CustomerManage, meta: { requiresAuth: true, role: 2 } },
       { path: '/customer-accounts/add', component: CustomerRegister, meta: { requiresAuth: true, role: 2 } },
       { path: '/customer-accounts/:id/details', component: CustomerDetails, meta: { requiresAuth: true, role: 2 } },
-      //deposit
+      //Transatation
       { path: '/teller/deposit', component: Deposit, meta: { requiresAuth: true, role: 2 } },
+      { path: '/teller/withdraw', component: Withdraw, meta: { requiresAuth: true, role: 2 } },
     ]
   },
   {

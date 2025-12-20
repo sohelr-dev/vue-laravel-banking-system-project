@@ -135,7 +135,7 @@ const role = auth.user?.role_id || 0;
               <i class="fas fa-arrow-down me-2"></i> Cash Deposit
             </router-link></li>
 
-          <li><router-link to="/withdraw" class="nav-link text-white">
+          <li><router-link to="/teller/withdraw" class="nav-link text-white">
               <i class="fas fa-arrow-up me-2"></i> Cash Withdraw
             </router-link></li>
 
