@@ -1,32 +1,72 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import api from '@/config/config';
+
+
+const loading = ref(true);
+const dashboardData = ref<any>(null);
 const customerProfile = ref({
-    name: 'Customer Three',
-    branch: 'Dhaka North Branch',
-    code: 'CUST-1005'
+    name: '',
+    branch: '',
+    code: '',
+    kyc_status: 0
 });
 
-const accounts = ref([
-    { id: 1, account_no: 'SB-10000002', balance: 25000.00 },
-    { id: 2, account_no: 'SB-10000009', balance: 200000.00 }
-]);
+const accounts = ref([]);
+const transactions = ref([]);
+const summary = ref({
+    total_balance: 0,
+    total_loan_outstanding: 0
+});
 
-const transactions = ref([
-    { id: 1, date: '20 Dec, 2025', ref: 'ATM Cash Withdrawal', acc: 'SB-10000002', type: 'Debit', amount: 5000 },
-    { id: 2, date: '19 Dec, 2025', ref: 'Monthly Salary', acc: 'SB-10000002', type: 'Credit', amount: 45000 },
-    { id: 3, date: '18 Dec, 2025', ref: 'Internal Fund Transfer', acc: 'SB-10000009', type: 'Debit', amount: 12000 },
-    { id: 4, date: '15 Dec, 2025', ref: 'Interest Credit', acc: 'SB-10000009', type: 'Credit', amount: 450 }
-]);
-
-const totalBalance = computed(() => accounts.value.reduce((s, a) => s + a.balance, 0));
-const totalLoan = ref(220000.00);
-
-const formatCurrency = (val: number) => {
-    return val.toLocaleString(undefined, { minimumFractionDigits: 2 });
+//currency
+const formatCurrency = (val: any) => {
+    return new Intl.NumberFormat('en-BD', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(val || 0);
 };
+
+//balance 
+const totalBalance = computed(() => summary.value.total_balance);
+const totalLoan = computed(() => summary.value.total_loan_outstanding);
+
+const fetchDashboardData = async () => {
+    try {
+        loading.value = true;
+        const response = await api.get('customer/dashboard');
+        console.log(response.data);
+
+        if (response.data.success) {
+            const data = response.data.data;
+            customerProfile.value = {
+                name: data.profile.name,
+                branch: data.profile.branch_name,
+                code: data.profile.customer_code,
+                kyc_status: data.profile.kyc_status
+            };
+
+            accounts.value = data.accounts;
+            transactions.value = data.transactions;
+            summary.value = data.summary;
+        }
+    } catch (error) {
+        console.error("Dashboard API Error:", error);
+    } finally {
+        loading.value = false;
+    }
+};
+
+onMounted(() => {
+    fetchDashboardData();
+});
 </script>
 <template>
-    <div class="container mt-4">
+    <div v-if="loading" class="text-center py-5">
+        <div class="spinner-border text-primary"></div>
+        <p class="mt-2">Loading your dashboard...</p>
+    </div>
+    <div class="container mt-4" v-else>
             <div class="row g-4 mb-4">
                 <div class="col-md-4">
                     <div class="card border-0 shadow-sm rounded-4 h-100 card-gradient-blue text-white">
@@ -49,7 +89,7 @@ const formatCurrency = (val: number) => {
                                 <i class="fas fa-hand-holding-usd fa-lg opacity-50"></i>
                             </div>
                             <h2 class="fw-bold mb-2">৳ {{ formatCurrency(totalLoan) }}</h2>
-                            <p class="small mb-0">Monthly Due: ৳ {{ formatCurrency(7500) }}</p>
+                            <p class="small mb-0">Monthly Due: ৳ {{ formatCurrency(0) }}</p>
                         </div>
                     </div>
                 </div>
@@ -61,7 +101,7 @@ const formatCurrency = (val: number) => {
                                 <span class="badge bg-success-subtle text-success">Active</span>
                             </div>
                             <h4 class="fw-bold text-navy mb-1">{{ accounts[0]?.account_no }}</h4>
-                            <p class="small text-muted mb-0">Branch: {{ customerProfile.branch }}</p>
+                            <p class="small text-muted mb-0">Branch: {{ customerProfile?.branch }}</p>
                         </div>
                     </div>
                 </div>
