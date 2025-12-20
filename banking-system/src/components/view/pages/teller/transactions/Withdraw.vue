@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import api from '@/config/config'
 import { useAuthStore } from '@/store/auth'
 
@@ -10,6 +10,10 @@ const processing = ref(false)
 const amount = ref<number | null>(null)
 const narration = ref('')
 const auth= useAuthStore();
+
+onMounted(()=>{
+    document.title = "Withdraw";
+})
 
 const findAccount = async () => {
     if (!accountNumber.value) return

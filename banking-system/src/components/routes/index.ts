@@ -16,6 +16,7 @@ import CustomerDetails from "../view/pages/admin/users/customers/CustomerDetails
 import CustomerRegister from "../view/pages/admin/users/customers/CustomerRegister.vue";
 import Deposit from "../view/pages/teller/transactions/Deposit.vue";
 import Withdraw from "../view/pages/teller/transactions/Withdraw.vue";
+import CustomerDashboard from "../view/pages/customer/CustomerDashboard.vue";
 
 const routes = [
   { path: '/login', component: Login, meta: { guestOnly: true } },
@@ -55,7 +56,7 @@ const routes = [
   {
     path:'/customer', component: CustomerTopbar,
     children: [
-      { path: 'dashboard', component: TellerDashboard, meta: { requiresAuth: true, role: 3 } },
+      { path: 'dashboard', component: CustomerDashboard, meta: { requiresAuth: true, role: 3 } },
       { path: 'user', component: TellerDashboard, meta: { requiresAuth: true, role: 3 } },
     ]
   },
