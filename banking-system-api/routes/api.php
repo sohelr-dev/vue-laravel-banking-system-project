@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //transactions
     Route::get('/accounts/search', [TransactionController::class, 'searchAccount']);
     Route::post('/transactions/deposit', [TransactionController::class, 'deposit']);
+    Route::post('/transactions/withdraw', [TransactionController::class, 'withdraw']);
     //branch routes
     Route::get('/branches', [BranchController::class, 'index']);
     Route::delete('/branches/{id}', [BranchController::class, 'destroy']);
@@ -45,6 +46,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/account-types/create', [BranchController::class, 'store']);
     //customer routes
     Route::post('/customers/register', [CustomerRegistrationController::class, 'register']);
+
+    Route::get('/customer/dashboard', [CustomerController::class, 'getDashboardData']);
+    
     Route::get('/customers', [CustomerController::class, 'index']);
     Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
     Route::get('/customers/show/{id}', [CustomerController::class, 'show']);

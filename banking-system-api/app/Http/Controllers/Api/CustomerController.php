@@ -150,4 +150,69 @@ class CustomerController extends Controller
             'message' => 'Customer deleted successfully'
         ], 200);
     }
+
+    //Customer Dashboard
+    public function getDashboardData()
+    {
+        $user = Auth::user();
+        $customer = DB::table('customers')
+        ->join('branches as b','b.id', '=','customers.branch_id')
+        ->where('user_id', $user->id)
+        ->select('customers.*','b.name as branch_name')
+            ->first();
+
+        if (!$customer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Customer profile not found'
+            ], 404);
+        }
+        $accounts = DB::table('accounts as a')
+            ->join('account_types as at', 'a.account_type_id', '=', 'at.id')
+            ->where('a.customer_id', $customer->id)
+            ->select('a.id', 'a.account_no', 'a.balance', 'a.status', 'at.type_name', 'a.currency')
+            ->get();
+
+        $totalBalance = $accounts->sum('balance');
+        $loans = DB::table('loans')
+            ->where('customer_id', $customer->id)
+            ->select(
+                DB::raw('SUM(principal_amount) as total_principal'),
+                DB::raw('SUM(outstanding_amount) as total_outstanding'),
+                DB::raw('COUNT(id) as active_loans')
+            )
+            ->first();
+        $recentTransactions = DB::table('transactions as t')
+            ->join('accounts as acc', 't.account_id', '=', 'acc.id')
+            ->where('acc.customer_id', $customer->id)
+            ->select(
+                't.id',
+                't.created_at as date',
+                // 't.reference as ref',
+                'acc.account_no as acc',
+                't.type',
+                't.amount'
+            )
+            ->orderBy('t.created_at', 'desc')
+            ->limit(5)
+            ->get();
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'profile' => [
+                    'name' => $user->name,
+                    'customer_code' => $customer->customer_code,
+                    'branch_name' => $customer->branch_name,
+                    'kyc_status' => $user->kyc_status,
+                ],
+                'summary' => [
+                    'total_balance' => $totalBalance,
+                    'total_loan_outstanding' => $loans->total_outstanding ?? 0,
+                    'total_accounts' => $accounts->count(),
+                ],
+                'accounts' => $accounts,
+                'transactions' => $recentTransactions
+            ]
+        ], 200);
+    }
 }
