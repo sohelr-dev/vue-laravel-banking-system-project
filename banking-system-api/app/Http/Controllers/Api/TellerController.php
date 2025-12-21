@@ -45,6 +45,7 @@ class TellerController extends Controller
                 't.teller_code',
                 't.designation',
                 't.daily_cash_limit',
+                't.current_balance',
                 't.status',
                 'u.name as teller_name',
                 'b.name as branch_name'

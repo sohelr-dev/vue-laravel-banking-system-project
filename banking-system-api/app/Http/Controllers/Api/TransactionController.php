@@ -17,37 +17,53 @@ class TransactionController extends Controller
     {
         $request->validate([
             'teller_id' => 'required|exists:tellers,id',
-            'amount' => 'required|numeric|min:1',
+            'amount'    => 'required|numeric|min:1',
+            'narration' => 'nullable|string|max:255'
         ]);
 
-        DB::beginTransaction();
+        $admin = Auth::user();
+
         try {
-            $teller = DB::table('tellers')->where('id', $request->teller_id);
-            $teller->increment('current_balance', $request->amount);
+            return DB::transaction(function () use ($request, $admin) {
+                $teller = Teller::lockForUpdate()->findOrFail($request->teller_id);
+                $teller->increment('current_balance',$request->amount);
+                $balanceBefore = $teller->current_balance;
+                $balanceAfter  = $balanceBefore + $request->amount;
+                $transaction = Transaction::create([
+                    'tx_uuid'        => (string) Str::uuid(),
+                    'account_id'     => null,
+                    'teller_id'      => $teller->id,
+                    'branch_id'      => $teller->branch_id,
+                    'type'           => 'cash_load',
+                    'amount'         => $request->amount,
+                    'balance_before' => $balanceBefore,
+                    'balance_after'  => $balanceAfter,
+                    'status'         => 'completed',
+                    'reference'      => 'Vault to Teller Cash Loading',
+                    'narration'      => $request->narration ?? 'Cash loaded by Admin',
+                    'meta' => [
+                        'loaded_by_admin' => $admin->name,
+                        'admin_user_id'   => $admin->id,
+                        'ip_address'      => $request->ip(),
+                        'timestamp'       => now()->toDateTimeString(),
+                    ]
+                ]);
 
-            $auth = Auth::user();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Cash loaded successfully to teller: ' . $teller->teller_code,
+                    'data' => [
+                        'tx_uuid' => $transaction->tx_uuid,
+                        'current_vault_cash' => $balanceAfter
+                    ]
+                ]);
+            });
 
-            DB::table('transactions')->insert([
-                'type' => 'Cash_Load',
-                'amount' => $request->amount,
-                'reference' => 'Cash loaded from Vault by Admin: ' . $auth->name,
-                'created_at' => now(),
-            ]);
-            DB::table('audit_logs')->insert([
-                'user_id' => $auth->id,
-                'action' => 'cash_loaded_to_teller',
-                'model' => 'Teller',
-                'model_id' => $request->teller_id,
-                'after_data' => json_encode(['loaded_amount' => $request->amount]),
-                'ip_address' => request()->ip(),
-                'created_at' => now(),
-            ]);
-
-            DB::commit();
-            return response()->json(['success' => true, 'message' => 'Cash loaded to teller successfully']);
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Cash loading failed: ' . $e->getMessage()
+            ], 500);
         }
     }
 

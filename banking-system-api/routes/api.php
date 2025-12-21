@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //transactions
     Route::get('/accounts/search', [TransactionController::class, 'searchAccount']);
+    Route::post('/admin/load-cash', [TransactionController::class, 'loadCashToTeller']);
     Route::post('/transactions/deposit', [TransactionController::class, 'deposit']);
     Route::post('/transactions/withdraw', [TransactionController::class, 'withdraw']);
     //branch routes
