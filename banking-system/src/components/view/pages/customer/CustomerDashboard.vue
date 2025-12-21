@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import api from '@/config/config';
+import type { Account } from '@/components/interfaces/account.interfaces';
+import type { TransactionType } from '@/components/interfaces/transaction.interfaces';
 
 
 const loading = ref(true);
@@ -12,8 +14,8 @@ const customerProfile = ref({
     kyc_status: 0
 });
 
-const accounts = ref([]);
-const transactions = ref([]);
+const accounts = ref<Account[]>([]);
+const transactions = ref<TransactionType[]>([]);
 const summary = ref({
     total_balance: 0,
     total_loan_outstanding: 0
@@ -48,6 +50,7 @@ const fetchDashboardData = async () => {
 
             accounts.value = data.accounts;
             transactions.value = data.transactions;
+            // console.log(transactions.value)
             summary.value = data.summary;
         }
     } catch (error) {
@@ -129,7 +132,7 @@ onMounted(() => {
                                     <tr v-for="tx in transactions" :key="tx.id">
                                         <td class="ps-4 small text-muted">{{ tx.date }}</td>
                                         <td>
-                                            <div class="fw-bold small">{{ tx.ref }}</div>
+                                            <!-- <div class="fw-bold small">{{ tx.ref }}</div> -->
                                             <div class="text-muted extra-small">{{ tx.acc }}</div>
                                         </td>
                                         <td>

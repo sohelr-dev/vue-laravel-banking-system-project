@@ -25,6 +25,7 @@ const formatCurrency = (amount: any) => {
 const fetchTeller = async () => {
     try {
         const res = await api.get(`tellers/teller/${tellerId}`);
+        console.log(res.data);
         if (res.data.success) teller.value = res.data.teller;
         else error.value = res.data.message || 'Failed to fetch teller';
     } catch (e: any) {
@@ -114,7 +115,7 @@ onMounted(() => {
                                 <div class="d-flex justify-content-between">
                                     <div>
                                         <p class="mb-1 small opacity-75">Current Till Balance</p>
-                                        <h4 class="fw-bold mb-0">{{ formatCurrency(teller.current_till_balance || 0) }}
+                                        <h4 class="fw-bold mb-0">{{ formatCurrency(teller.current_balance || 0) }}
                                         </h4>
                                     </div>
                                     <i class="fas fa-vault fa-2x opacity-25"></i>

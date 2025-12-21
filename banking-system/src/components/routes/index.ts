@@ -17,6 +17,7 @@ import CustomerRegister from "../view/pages/admin/users/customers/CustomerRegist
 import Deposit from "../view/pages/teller/transactions/Deposit.vue";
 import Withdraw from "../view/pages/teller/transactions/Withdraw.vue";
 import CustomerDashboard from "../view/pages/customer/CustomerDashboard.vue";
+import CashLoad from "../view/pages/admin/transaction/CashLoad.vue";
 
 const routes = [
   { path: '/login', component: Login, meta: { guestOnly: true } },
@@ -38,7 +39,8 @@ const routes = [
       { path: 'customers', component: CustomerManage, meta: { requiresAuth: true, role: 1 } },
       { path: 'customers/:id/details', component: CustomerDetails, meta: { requiresAuth: true, role: 1 } },
       { path: 'customers/add', component: CustomerRegister, meta: { requiresAuth: true, role: 1 } },
-
+      //transaction related route for admin
+      { path: 'cash-load', component: CashLoad, meta: { requiresAuth: true, role: 1 } },
     ]
   },
   {

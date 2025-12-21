@@ -12,6 +12,7 @@ export interface TransactionType {
   meta?: Record<string, any>;
   created_at?: string;
   updated_at?: string;
+  date?:string
 }
 
 export const defaultTransaction: TransactionType = {
