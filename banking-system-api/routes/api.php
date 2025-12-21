@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tellers', [TellerController::class, 'index']);
     Route::delete('/tellers/{id}', [TellerController::class, 'destroy']);
     Route::get('/tellers/teller/{id}', [TellerController::class, 'show']);
-    Route::post('/tellers/create', [TellerController::class, 'storeTeller']);
+    Route::post('/tellers/create', [TellerController::class, 'registerTeller']);
 
     //transactions
     Route::get('/accounts/search', [TransactionController::class, 'searchAccount']);
@@ -48,7 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/customers/register', [CustomerRegistrationController::class, 'register']);
 
     Route::get('/customer/dashboard', [CustomerController::class, 'getDashboardData']);
-    
+
     Route::get('/customers', [CustomerController::class, 'index']);
     Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
     Route::get('/customers/show/{id}', [CustomerController::class, 'show']);

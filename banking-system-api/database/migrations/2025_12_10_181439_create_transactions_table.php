@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->decimal('balance_after', 18, 4);
             $table->enum('status', ['pending','completed','failed','cancelled'])->default('pending');
             $table->unsignedBigInteger('teller_id')->nullable();
+            $table->string('reference', 255)->nullable();
             $table->string('narration', 255)->nullable();
             $table->json('meta')->nullable();
             $table->timestamps();

@@ -69,6 +69,7 @@ class TellerController extends Controller
                 't.teller_code',
                 't.designation',
                 't.daily_cash_limit',
+                't.current_balance',
                 't.status',
                 't.created_at',
                 't.updated_at',
@@ -97,11 +98,8 @@ class TellerController extends Controller
                 'teller'=>$tellers
             ],200);
     }
-
-    public function storeTeller(Request $request)
+    public function registerTeller(Request $request)
     {
-        // $auth = auth()->user();
-        // dd($auth->id);
         $request->validate([
             'name' => 'required|string|min:6|max:150',
             'email' => 'required|email|unique:users,email',
@@ -127,18 +125,19 @@ class TellerController extends Controller
                 'teller_code' => 'TLR'.str_pad($user->id, 6, '0', STR_PAD_LEFT),
                 'designation' => 'Cashier',
                 'daily_cash_limit' => $request->daily_cash_limit ?? 0,
+                'current_balance' => 0,
             ]);
             //audit log
-            $user = Auth::user();
+            $admin = Auth::user();
             DB::table('audit_logs')->insert([
-                'user_id' => $user->id ?? $request->auth_id,
+                'user_id' => $admin->id ?? $request->auth_id,
                 'action' => 'teller_created',
                 'model' => 'Teller',
                 'model_id' => $teller->id,
                 'before_data' => json_encode([]),
                 'after_data' => json_encode([
                                 'user' => $user->only(['id', 'name', 'email']),
-                                $teller->toArray(),
+                                'teller_details'=>$teller->toArray(),
 
                                 ]),
                 'ip_address' => request()->ip(),

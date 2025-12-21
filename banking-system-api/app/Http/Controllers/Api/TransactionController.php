@@ -12,6 +12,45 @@ use Illuminate\Support\Str;
 
 class TransactionController extends Controller
 {
+    //cash -> admin to teller/cashier
+    public function loadCashToTeller(Request $request)
+    {
+        $request->validate([
+            'teller_id' => 'required|exists:tellers,id',
+            'amount' => 'required|numeric|min:1',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $teller = DB::table('tellers')->where('id', $request->teller_id);
+            $teller->increment('current_balance', $request->amount);
+
+            $auth = Auth::user();
+
+            DB::table('transactions')->insert([
+                'type' => 'Cash_Load',
+                'amount' => $request->amount,
+                'reference' => 'Cash loaded from Vault by Admin: ' . $auth->name,
+                'created_at' => now(),
+            ]);
+            DB::table('audit_logs')->insert([
+                'user_id' => $auth->id,
+                'action' => 'cash_loaded_to_teller',
+                'model' => 'Teller',
+                'model_id' => $request->teller_id,
+                'after_data' => json_encode(['loaded_amount' => $request->amount]),
+                'ip_address' => request()->ip(),
+                'created_at' => now(),
+            ]);
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Cash loaded to teller successfully']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
+
     public function searchAccount(Request $request)
     {
         $accountNo = $request->query('account_no');
@@ -60,12 +99,14 @@ class TransactionController extends Controller
 
         try {
             return DB::transaction(function () use ($request, $teller, $user) {
-
                 $account = Account::lockForUpdate()->findOrFail($request->id);
-
                 $balanceBefore = $account->balance;
                 $balanceAfter  = $balanceBefore + $request->amount;
                 $account->update(['balance' => $balanceAfter]);
+
+                $teller = Teller::where('user_id', $user->id)->lockForUpdate()->first();
+
+                $teller->increment('current_balance', $request->amount);
 
                 $transaction = Transaction::create([
                     'tx_uuid'        => (string) Str::uuid(),
@@ -75,6 +116,7 @@ class TransactionController extends Controller
                     'balance_before' => $balanceBefore,
                     'balance_after'  => $balanceAfter,
                     'status'         => 'completed',
+                    'reference'      => 'Cash Deposit via Teller',
                     'teller_id'      => $teller->id,
                     'branch_id'      => $teller->branch_id,
                     'narration'      => $request->narration ?? 'Cash deposit by teller',
@@ -112,9 +154,7 @@ class TransactionController extends Controller
             'narration' => 'nullable|string|max:255'
         ]);
         $user = Auth::user();
-
         $teller = Teller::where('user_id', $user->id)->first();
-
         if (!$teller) {
             return response()->json([
                 'success' => false,
@@ -136,6 +176,9 @@ class TransactionController extends Controller
                 $balanceAfter  = $balanceBefore - $request->amount;
                 $account->update(['balance' => $balanceAfter]);
 
+                $teller = Teller::where('user_id', $user->id)->lockForUpdate()->first();
+                $teller->decrement('current_balance', $request->amount);
+
                 $transaction = Transaction::create([
                     'tx_uuid'        => (string) Str::uuid(),
                     'account_id'     => $account->id,
@@ -144,6 +187,7 @@ class TransactionController extends Controller
                     'balance_before' => $balanceBefore,
                     'balance_after'  => $balanceAfter,
                     'status'         => 'completed',
+                    'reference'      => 'Cash Deposit via Teller',
                     'teller_id'      => $teller->id,
                     'branch_id'      => $teller->branch_id,
                     'narration'      => $request->narration ?? 'Cash withdrawal by teller',
@@ -172,4 +216,6 @@ class TransactionController extends Controller
             ], 500);
         }
     }
+
+
 }

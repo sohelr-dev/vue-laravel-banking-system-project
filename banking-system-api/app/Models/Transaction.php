@@ -23,6 +23,7 @@ class Transaction extends Model
         'balance_after',
         'status',
         'narration',
+        'reference',
         'meta',
     ];
 

@@ -17,6 +17,7 @@ class Teller extends Model
         'branch_id',
         'designation',
         'daily_cash_limit',
+        'current_balance',
         'status',
     ];
 
