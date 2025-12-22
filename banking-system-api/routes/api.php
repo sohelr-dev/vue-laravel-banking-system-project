@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AccountTypeController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\CustomerTransferController;
 use App\Http\Controllers\Api\Register\CustomerRegistrationController;
 use App\Http\Controllers\Api\TellerController;
 use App\Http\Controllers\Api\TellerDashboardController;
@@ -24,7 +25,9 @@ Route::get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     //teller routes
-    Route::get('/teller/dashboard-summary', [TellerDashboardController::class, 'getSummary']);
+    Route::get('/teller/summary', [TellerDashboardController::class, 'getSummary']);
+    Route::post('/teller/cash-return', [TellerDashboardController::class, 'cashReturn']);
+
     Route::get('/tellers', [TellerController::class, 'index']);
     Route::delete('/tellers/{id}', [TellerController::class, 'destroy']);
     Route::get('/tellers/teller/{id}', [TellerController::class, 'show']);
@@ -48,11 +51,14 @@ Route::middleware('auth:sanctum')->group(function () {
     //customer routes
     Route::post('/customers/register', [CustomerRegistrationController::class, 'register']);
 
-    Route::get('/customer/dashboard', [CustomerController::class, 'getDashboardData']);
+    Route::get('/customer/dashboard', [CustomerController::class, 'getCustomerDashboardData']);
 
     Route::get('/customers', [CustomerController::class, 'index']);
     Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
     Route::get('/customers/show/{id}', [CustomerController::class, 'show']);
+    //balance transfer
+    Route::get('customer/verify-account/{account_no}', [CustomerTransferController::class, 'verifyAccount']);
+    Route::post('customer/transfer', [CustomerTransferController::class, 'transfer']);
 
 });
 

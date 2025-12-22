@@ -152,20 +152,18 @@ class CustomerController extends Controller
     }
 
     //Customer Dashboard
-    public function getDashboardData()
+    public function getCustomerDashboardData()
     {
         $user = Auth::user();
-        $customer = DB::table('customers')
-        ->join('branches as b','b.id', '=','customers.branch_id')
-        ->where('user_id', $user->id)
-        ->select('customers.*','b.name as branch_name')
+
+        $customer = DB::table('customers as c')
+            ->join('branches as b', 'c.branch_id', '=', 'b.id')
+            ->where('c.user_id', $user->id)
+            ->select('c.id', 'c.customer_code', 'b.name as branch_name')
             ->first();
 
         if (!$customer) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Customer profile not found'
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Customer profile not found'], 404);
         }
         $accounts = DB::table('accounts as a')
             ->join('account_types as at', 'a.account_type_id', '=', 'at.id')
@@ -173,44 +171,46 @@ class CustomerController extends Controller
             ->select('a.id', 'a.account_no', 'a.balance', 'a.status', 'at.type_name', 'a.currency')
             ->get();
 
-        $totalBalance = $accounts->sum('balance');
         $loans = DB::table('loans')
             ->where('customer_id', $customer->id)
-            ->select(
-                DB::raw('SUM(principal_amount) as total_principal'),
-                DB::raw('SUM(outstanding_amount) as total_outstanding'),
-                DB::raw('COUNT(id) as active_loans')
-            )
+            ->selectRaw('SUM(outstanding_amount) as total_outstanding, COUNT(id) as active_loans')
             ->first();
         $recentTransactions = DB::table('transactions as t')
             ->join('accounts as acc', 't.account_id', '=', 'acc.id')
             ->where('acc.customer_id', $customer->id)
-            ->select(
-                't.id',
-                't.created_at as date',
-                // 't.reference as ref',
-                'acc.account_no as acc',
-                't.type',
-                't.amount'
-            )
+            ->select('t.id', 't.created_at', 'acc.account_no', 't.type', 't.amount', 't.status', 't.reference')
             ->orderBy('t.created_at', 'desc')
             ->limit(5)
-            ->get();
+            ->get()
+            ->map(function($tx) {
+                return [
+                    'id'         => $tx->id,
+                    'date'       => \Carbon\Carbon::parse($tx->created_at)->format('d M, Y'),
+                    'time'       => \Carbon\Carbon::parse($tx->created_at)->format('h:i A'),
+                    'account_no' => $tx->account_no,
+                    'type'       => $tx->type,
+                    'amount'     => (float) $tx->amount,
+                    'status'     => $tx->status,
+                    'reference'  => $tx->reference
+                ];
+            });
+
         return response()->json([
             'success' => true,
             'data' => [
                 'profile' => [
-                    'name' => $user->name,
+                    'name'          => $user->name,
                     'customer_code' => $customer->customer_code,
-                    'branch_name' => $customer->branch_name,
-                    'kyc_status' => $user->kyc_status,
+                    'branch_name'   => $customer->branch_name,
+                    'kyc_status'    => $user->kyc_status,
                 ],
                 'summary' => [
-                    'total_balance' => $totalBalance,
-                    'total_loan_outstanding' => $loans->total_outstanding ?? 0,
-                    'total_accounts' => $accounts->count(),
+                    'total_balance'          => (float) $accounts->sum('balance'),
+                    'total_loan_outstanding' => (float) ($loans->total_outstanding ?? 0),
+                    'total_accounts'         => $accounts->count(),
+                    'active_loans_count'     => (int) ($loans->active_loans ?? 0),
                 ],
-                'accounts' => $accounts,
+                'accounts'     => $accounts,
                 'transactions' => $recentTransactions
             ]
         ], 200);
