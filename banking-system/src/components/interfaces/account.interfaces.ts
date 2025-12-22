@@ -5,6 +5,7 @@ export interface Account {
   branch_id?: number;
   account_type_id: number;
   currency?: string;
+  type_name?: string;
   balance?: number;
   available_balance?: number;
   status?: 'active' | 'blocked' | 'closed';

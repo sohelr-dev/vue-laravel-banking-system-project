@@ -85,6 +85,9 @@ const deleteTeller = (id: number) => {
                 <p class="text-muted small mb-0">Manage system tellers, cash limits, and branch assignments.</p>
             </div>
             <div class="col-auto">
+                <router-link to="/tellers/cash-load" class="btn btn-primary shadow-sm px-4 rounded-pill me-2">
+                    <i class="fas fa-plus me-2"></i>Cash Add
+                </router-link>
                 <router-link to="/tellers/add" class="btn btn-primary shadow-sm px-4 rounded-pill">
                     <i class="fas fa-plus me-2"></i>Add New Teller
                 </router-link>

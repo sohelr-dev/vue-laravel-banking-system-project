@@ -6,12 +6,12 @@ const tellers = ref<any[]>([])
 const loading = ref(false)
 const processing = ref(false)
 
-// ফর্ম ডাটা
+
 const showModal = ref(false)
 const selectedTeller = ref<any>(null)
 const loadAmount = ref<number | null>(null)
 
-// টেলারদের লিস্ট লোড করা
+
 const fetchTellers = async () => {
     loading.value = true
     try {
