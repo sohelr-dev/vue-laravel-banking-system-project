@@ -38,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/load-cash', [TransactionController::class, 'loadCashToTeller']);
     Route::post('/transactions/deposit', [TransactionController::class, 'deposit']);
     Route::post('/transactions/withdraw', [TransactionController::class, 'withdraw']);
+    Route::get('/transactions', [TransactionController::class, 'index']);
     //branch routes
     Route::get('/branches', [BranchController::class, 'index']);
     Route::delete('/branches/{id}', [BranchController::class, 'destroy']);

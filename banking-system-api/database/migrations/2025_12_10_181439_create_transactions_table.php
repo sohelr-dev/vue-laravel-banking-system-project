@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->char('tx_uuid', 36)->unique();
             $table->unsignedBigInteger('account_id')->nullable();
-            $table->unsignedBigInteger('related_account_id')->nullable();
+            $table->unsignedBigInteger('account_relation_id')->nullable();
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('teller_id')->nullable();
             $table->enum('type', ['deposit','withdrawal','transfer','fee','interest','adjustment']);

@@ -233,5 +233,24 @@ class TransactionController extends Controller
         }
     }
 
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        $query = Transaction::with(['account.customer.user']);
+
+
+        if ($user->role_id == 2) {
+            $query->whereHas('account', function($q) use ($user) {
+                $q->where('branch_id', $user->branch_id);
+            });
+        }
+        $transactions = $query->latest()->paginate(15);
+
+        return response()->json([
+            'success' => true,
+            'data' => $transactions
+        ]);
+    }
+
 
 }

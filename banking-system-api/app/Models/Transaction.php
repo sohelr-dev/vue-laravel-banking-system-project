@@ -16,7 +16,7 @@ class Transaction extends Model
         'account_id',
         'teller_id',
         'branch_id',
-        'related_account_id',
+        'account_relation_id',
         'type',
         'amount',
         'balance_before',

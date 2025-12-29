@@ -57,7 +57,7 @@ class CustomerTransferController extends Controller
                     throw new \Exception('Insufficient balance in your account.');
                 }
                 $relation_id = (string) Str::uuid();
-                $tx_uuid = (string) Str::uuid();
+                // $tx_uuid = (string) Str::uuid();
                 $transferAmount = $request->amount;
                 // debit
                 $fromOldBalance = $fromAccount->balance;
@@ -97,7 +97,7 @@ class CustomerTransferController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Transfer Successful!',
-                    'tx_id'   => $tx_uuid
+                    'tx_id'   => $relation_id
                 ]);
             });
         } catch (\Exception $e) {
