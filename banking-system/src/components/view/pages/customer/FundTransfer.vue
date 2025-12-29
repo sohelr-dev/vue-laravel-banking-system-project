@@ -29,7 +29,7 @@ const fetchAccounts = async () => {
     }
 };
 
-// একাউন্ট নাম্বার লিখলে নাম অটো চেক করার লজিক
+
 const verifyReceiver = async () => {
     if (transferData.value.to_account_no.length < 10) return;
 
@@ -64,8 +64,9 @@ const handleTransfer = async () => {
         try {
             const res = await api.post('customer/transfer', transferData.value);
             if (res.data.success) {
+            console.log(res.data);
                 await Swal.fire('Success', 'Transfer Completed Successfully!', 'success');
-                router.push('/customer/dashboard'); // ট্রান্সফার শেষে ড্যাশবোর্ডে পাঠাবে
+                router.push('/customer/dashboard'); 
             }
         } catch (error: any) {
             Swal.fire('Failed', error.response?.data?.message || 'Transaction failed', 'error');

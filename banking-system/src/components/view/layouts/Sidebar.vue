@@ -143,7 +143,7 @@ const role = auth.user?.role_id || 0;
               <i class="fas fa-exchange-alt me-2"></i> Fund Transfer
             </router-link></li>
 
-          <li><router-link to="/my-transactions" class="nav-link text-white">
+          <li><router-link to="/teller/transactions" class="nav-link text-white">
               <i class="fas fa-list me-2"></i> My Transactions
             </router-link></li>
 

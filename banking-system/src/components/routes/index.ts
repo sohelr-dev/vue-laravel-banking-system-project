@@ -19,6 +19,7 @@ import Withdraw from "../view/pages/teller/transactions/Withdraw.vue";
 import CustomerDashboard from "../view/pages/customer/CustomerDashboard.vue";
 import CashLoad from "../view/pages/admin/transaction/CashLoad.vue";
 import FundTransfer from "../view/pages/customer/FundTransfer.vue";
+import Transaction from "../view/pages/admin/transaction/Transaction.vue";
 
 const routes = [
   { path: '/login', component: Login, meta: { guestOnly: true } },
@@ -43,6 +44,7 @@ const routes = [
       
       //transaction related route for admin
       { path: 'tellers/cash-load', component: CashLoad, meta: { requiresAuth: true, role: 1 } },
+      { path: 'transactions', component: Transaction, meta: { requiresAuth: true, role: 1 } },
     ]
   },
   {
@@ -55,6 +57,7 @@ const routes = [
       //Transatation
       { path: '/teller/deposit', component: Deposit, meta: { requiresAuth: true, role: 2 } },
       { path: '/teller/withdraw', component: Withdraw, meta: { requiresAuth: true, role: 2 } },
+      { path: '/teller/transactions', component: Transaction, meta: { requiresAuth: true, role: 2 } },
     ]
   },
   {
