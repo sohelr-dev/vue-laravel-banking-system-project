@@ -77,13 +77,14 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const auth = useAuthStore();
+  const userRole = Number(auth.user?.role_id) || 0;
 
   if (to.meta.requiresAuth) {
     if (!auth.isauthenticated) return next('/login');
 
-    if (to.meta.role && auth.user?.role_id !== to.meta.role) {
+    if (to.meta.role && userRole !== to.meta.role) {
       // redirect to own dashboard
-      switch(auth.user?.role_id) {
+      switch(userRole) {
         case 1: return next('/dashboard'); // admin
         case 2: return next('/teller/dashboard');
         case 3: return next('/customer/dashboard');

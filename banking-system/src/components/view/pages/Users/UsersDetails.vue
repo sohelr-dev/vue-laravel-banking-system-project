@@ -73,7 +73,7 @@
                         <div class="row">
                             <div class="col-sm-6 mb-3">
                                 <div class="small text-muted">Account No</div>
-                                <div class="fw-semibold">{{ user.meta.department || '-' }}</div>
+                                <div class="fw-semibold">{{ user?.meta?.department || '-' }}</div>
                             </div>
                             <!-- <div class="col-sm-6 mb-3">
                                 <div class="small text-muted">Branch</div>
@@ -154,6 +154,7 @@ import { useRoute } from 'vue-router';
     const loading = ref(true);
     const error = ref<string | null>(null);
         const user = ref<UserType | null>(defaultUser);
+
             api.get('users/'+queryId)
             .then((res)=>{
                 user.value =res.data;

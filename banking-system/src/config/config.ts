@@ -1,7 +1,10 @@
 import axios from "axios";
 
-const baseApiUrl = "http://127.0.0.1:8000/api/";
-const baseUrl = "http://127.0.0.1:8000/";
+// const baseApiUrl = "http://127.0.0.1:8000/api/";
+// const baseUrl = "http://127.0.0.1:8000/";
+//server:
+const baseApiUrl = "https://banking-system.sohelit.com/api/";
+const baseUrl = "https://banking-system.sohelit.com/";
 
 export { baseUrl };
 

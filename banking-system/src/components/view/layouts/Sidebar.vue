@@ -7,7 +7,8 @@ function handleLogOut() {
   auth.logout();
 }
 
-const role = auth.user?.role_id || 0; 
+const role = Number(auth.user?.role_id) || 0; 
+// console.log(role);
 </script>
 
 <template>

@@ -116,6 +116,7 @@
 import { useAuthStore } from "@/store/auth";
 
 const auth = useAuthStore();
+// console.log(auth);
 function handleLogOut() {
     auth.logout();
 }
