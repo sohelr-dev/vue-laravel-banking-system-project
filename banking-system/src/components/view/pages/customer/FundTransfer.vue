@@ -77,6 +77,11 @@ const handleTransfer = async () => {
 };
 
 onMounted(fetchAccounts);
+
+onMounted(() => {
+    document.title = "Fund Transfer | Customer";
+    
+});
 </script>
 
 <template>

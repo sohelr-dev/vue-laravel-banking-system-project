@@ -29,8 +29,8 @@
                         <div class="text-center">
                             <!-- <img :src="avatarUrl" class="rounded-circle mb-3" alt="avatar"
                                 style="width:120px; height:120px; object-fit:cover;"> -->
-                            <h4 class="mb-0">{{ user.name }}</h4>
-                            <small class="text-muted d-block mb-2">{{ user.email }}</small>
+                            <h4 class="mb-0">{{ user?.name }}</h4>
+                            <small class="text-muted d-block mb-2">{{ user?.email }}</small>
 
                             <div class="d-grid gap-2">
                                 <router-link to="/users" class="btn btn-outline-primary" >
@@ -52,15 +52,15 @@
                             <div class="list-group list-group-flush">
                                 <div class="list-group-item d-flex justify-content-between align-items-center">
                                     <small class="text-muted">Role</small>
-                                    <span class="fw-semibold">{{ user.role_id }}</span>
+                                    <span class="fw-semibold">{{ user?.role_id }}</span>
                                 </div>
                                 <div class="list-group-item d-flex justify-content-between align-items-center">
                                     <small class="text-muted">KYC</small>
-                                    <span :class="kycBadgeClass">{{ user.kyc_status }}</span>
+                                    <span class="kycBadgeClass">{{ user?.kyc_status }}</span>
                                 </div>
                                 <div class="list-group-item d-flex justify-content-between align-items-center">
                                     <small class="text-muted">Phone</small>
-                                    <span>{{ user.phone || '-' }}</span>
+                                    <span>{{ user?.phone || '-' }}</span>
                                 </div>
                             </div>
                         </div>

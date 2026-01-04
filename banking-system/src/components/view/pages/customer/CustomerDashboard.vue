@@ -73,6 +73,7 @@ const isCredit = (type: any): boolean => {
 };
 
 onMounted(() => {
+    document.title="Dashboard | Customer";
     fetchDashboardData();
 });
 </script>
