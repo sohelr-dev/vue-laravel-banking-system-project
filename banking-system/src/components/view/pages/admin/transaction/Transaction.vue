@@ -50,6 +50,10 @@ const isCredit = (type: any): boolean => {
 const formatCurrency = (val: any) => parseFloat(val).toLocaleString('en-BD', { minimumFractionDigits: 2 });
 
 onMounted(() => fetchTransactions());
+onMounted(() => {
+    document.title = "Transaction | Admin";
+
+});
 </script>
 
 <template>
@@ -196,12 +200,10 @@ onMounted(() => fetchTransactions());
 .bg-danger-subtle {
     background-color: #ffebee;
 }
-
 .page-link {
     color: #1a237e;
     cursor: pointer;
 }
-
 .page-item.active .page-link {
     background-color: #1a237e;
     border-color: #1a237e;

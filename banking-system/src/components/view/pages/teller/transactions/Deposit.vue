@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import api from '@/config/config'
 
 const accountNumber = ref('')
@@ -49,7 +49,11 @@ const handleDeposit = async () => {
     } finally {
         processing.value = false
     }
-}
+};
+onMounted(() => {
+    document.title = "Deposit";
+   
+});
 </script>
 
 <template>

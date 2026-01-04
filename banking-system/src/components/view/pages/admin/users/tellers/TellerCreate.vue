@@ -54,6 +54,10 @@ const submitForm = async () => {
 
 
 onMounted(fetchBranches);
+onMounted(() => {
+    document.title = "Teller Register";
+
+});
 </script>
 
 <template>

@@ -62,7 +62,7 @@ const role= auth.user?.role_id;
 // console.log(role);
 
 onMounted(() => {
-    document.title = "Customer Management - Admin Dashboard"
+    document.title = "Customer Management - Admin "
     fetchBranches()
     fetchCustomers()
 })

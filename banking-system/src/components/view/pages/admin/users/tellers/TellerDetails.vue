@@ -35,7 +35,7 @@ const fetchTeller = async () => {
     }
 };
 onMounted(() => {
-    document.title = "Customers Details";
+    document.title = "Teller Details";
     fetchTeller();
 });
 

@@ -45,6 +45,10 @@ const calculateProgress = (principal: string, outstanding: string) => {
     const paidPercent = ((p - o) / p) * 100;
     return paidPercent.toFixed(2);
 };
+onMounted(() => {
+    document.title = "Customer Details";
+
+});
 </script>
 
 <template>

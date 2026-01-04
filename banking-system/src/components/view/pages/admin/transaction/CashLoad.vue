@@ -56,7 +56,11 @@ const submitCashLoad = async () => {
     }
 }
 
-onMounted(fetchTellers)
+onMounted(fetchTellers);
+onMounted(() => {
+    document.title = "Cash Load";
+
+});
 </script>
 
 <template>

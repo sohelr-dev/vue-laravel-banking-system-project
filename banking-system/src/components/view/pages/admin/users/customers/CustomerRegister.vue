@@ -47,6 +47,10 @@ const submitRegistration = async () => {
         loading.value = false;
     }
 };
+onMounted(() => {
+    document.title = " Customer Register";
+
+});
 </script>
 <template>
     <div class="container py-5">
