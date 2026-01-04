@@ -38,9 +38,31 @@ import { useRouter } from 'vue-router';
 </script>
 <template>
   <div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card shadow p-4 login-card">
 
-      <h3 class="text-center mb-4">Login</h3>
+    
+    <div class="card shadow p-4 login-card">
+      
+      <h3 class="text-center mb-2">Login</h3>
+      <hr>
+      <div class="card mb-3 p-3 shadow-sm">
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+          <button class="btn btn-outline-primary rounded" @click="form.email = 'admin@gmail.com'">
+            Admin
+          </button>
+          <button class="btn btn-outline-secondary rounded" @click="form.email = 'rupon@gmail.com'">
+            Teller/Cashier
+          </button>
+          <button class="btn btn-outline-warning rounded" @click="form.email = 'habibur@gmail.com'">
+            Customer
+          </button>
+          <button class="btn btn-outline-danger rounded" @click="form.email = 'mahedi@gmail.com'">
+            Customer2
+          </button>
+          <button class="btn btn-outline-success rounded" @click="form.password = '123123123'">
+            Password
+          </button>
+        </div>
+      </div>
 
       <form @submit.prevent="handleLogin">
 
@@ -68,8 +90,10 @@ import { useRouter } from 'vue-router';
         <button type="submit" class="btn btn-primary w-100">Login</button>
       </form>
       <div class="text-center mt-3">
-        Don't have an account? <router-link to="/register">Register</router-link>
-      </div>
+        <span class="text-muted">Don't have an account?</span>
+        <br />
+        <span class="fw-semibold text-primary">Please contact any branch.</span>
+    </div>
     </div>
   </div>
 </template>
